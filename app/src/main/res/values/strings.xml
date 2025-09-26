@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DailyBoost</string>
+    <string name="onboard1_title">Welcome to DailyBoost - Build Healthy Habits!</string>
+    <string name="onboard1_description">Stay on track by adding, editing, and completing your daily habits with progress tracking!</string>
 </resources>
