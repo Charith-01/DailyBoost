@@ -2,4 +2,6 @@
     <string name="app_name">DailyBoost</string>
     <string name="onboard1_title">Welcome to DailyBoost - Build Healthy Habits!</string>
     <string name="onboard1_description">Stay on track by adding, editing, and completing your daily habits with progress tracking!</string>
+    <string name="onboard2_title">Good vibes, keep going - Track Your Moods!</string>
+    <string name="onboard2_description">Log your emotions with emojis and notes, and reflect on your mental well-being Celebrate your peace.</string>
 </resources>

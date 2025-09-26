@@ -1,5 +1,6 @@
 package com.example.dailyboost
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,14 @@ class OnboardScreen1 : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, systemBars.bottom)
             insets
+        }
+
+        // Handle Next button click → open OnboardScreen2
+        val nextBtn = findViewById<android.widget.ImageView>(R.id.btnNext)
+        nextBtn.setOnClickListener {
+            val intent = Intent(this, onboardScreen2::class.java)
+            startActivity(intent)
+            finish() // optional: close OnboardScreen1 so user can’t go back
         }
     }
 }
