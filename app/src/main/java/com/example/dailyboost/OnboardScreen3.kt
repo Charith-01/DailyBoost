@@ -33,6 +33,14 @@ class OnboardScreen3 : AppCompatActivity() {
         val btnPrev = findViewById<ImageView>(R.id.btnSkip)
         btnPrev.setOnClickListener {
             startActivity(Intent(this, OnboardScreen2::class.java))
+            finish()
+        }
+
+        // --- Navigation: Get Started button goes to SignInScreen ---
+        val btnNext = findViewById<ImageView>(R.id.btnNext)
+        btnNext.setOnClickListener {
+            startActivity(Intent(this, SignInScreen::class.java))
+            finish()
         }
     }
 }
