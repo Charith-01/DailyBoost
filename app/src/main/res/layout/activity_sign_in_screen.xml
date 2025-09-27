@@ -33,7 +33,7 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Welcome Back! 😀👋"
+                android:text="@string/signin_title"
                 android:textSize="26sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins_semibold"
@@ -44,7 +44,7 @@
                 android:id="@+id/subtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sign in to access your personalized habit tracking experience."
+                android:text="@string/signin_subtitle"
                 android:textSize="16sp"
                 android:textColor="@color/gray"
                 android:fontFamily="@font/poppins_medium"
@@ -55,7 +55,7 @@
                 android:id="@+id/emailLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Email"
+                android:text="@string/email"
                 android:textSize="18sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins_medium"
@@ -83,7 +83,7 @@
                     android:layout_height="match_parent"
                     android:layout_toEndOf="@id/iconEmail"
                     android:layout_marginStart="12dp"
-                    android:hint="Email"
+                    android:hint="@string/email_hint"
                     android:inputType="textEmailAddress"
                     android:background="@android:color/transparent"
                     android:textSize="16sp"
@@ -95,7 +95,7 @@
                 android:id="@+id/passwordLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Password"
+                android:text="@string/password"
                 android:textSize="18sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins_medium"
@@ -124,7 +124,7 @@
                     android:layout_toStartOf="@+id/iconEye"
                     android:layout_toEndOf="@id/iconLock"
                     android:layout_marginStart="12dp"
-                    android:hint="Password"
+                    android:hint="@string/password_hint"
                     android:inputType="textPassword"
                     android:background="@android:color/transparent"
                     android:textSize="16sp"
@@ -137,7 +137,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     app:tint="@color/gray"
-                    android:contentDescription="show password"
+                    android:contentDescription="@string/show_password"
                     android:src="@android:drawable/ic_menu_view" />
             </RelativeLayout>
 
@@ -153,7 +153,7 @@
                     android:id="@+id/rememberMe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Remember me"
+                    android:text="@string/remember_me"
                     android:fontFamily="@font/poppins_medium"
                     android:buttonTint="@color/primary" />
 
@@ -174,7 +174,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="24dp"
-                android:text="Sign in"
+                android:text="@string/sign_in"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
@@ -199,7 +199,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="or sign up with"
+                    android:text="@string/or_sign_up_with"
                     android:textColor="@color/gray"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
@@ -239,7 +239,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Continue with Google"
+                        android:text="@string/continue_with_google"
                         android:textSize="16sp"
                         android:fontFamily="@font/poppins_medium"/>
                 </FrameLayout>
@@ -272,7 +272,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Continue with Apple"
+                        android:text="@string/continue_with_apple"
                         android:textSize="16sp"
                         android:fontFamily="@font/poppins_medium"/>
                 </FrameLayout>
@@ -305,7 +305,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Continue with Facebook"
+                        android:text="@string/continue_with_facebook"
                         android:textSize="16sp"
                         android:fontFamily="@font/poppins_medium"/>
                 </FrameLayout>
@@ -326,7 +326,7 @@
                     android:id="@+id/txtNoAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Don’t have an account? "
+                    android:text="@string/don_t_have_an_account"
                     android:textSize="14sp"
                     android:textColor="@color/black"
                     android:fontFamily="@font/poppins_medium" />
@@ -335,7 +335,7 @@
                     android:id="@+id/txtSignUp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Sign Up"
+                    android:text="@string/sign_up"
                     android:textSize="16sp"
                     android:textColor="@color/primary"
                     android:fontFamily="@font/poppins_semibold" />
