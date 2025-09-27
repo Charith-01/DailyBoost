@@ -7,8 +7,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary"
-    tools:context=".OnboardScreen2">
+    tools:context=".OnboardScreen3">
 
+    <!-- where the white panel starts -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/topGuide"
         android:layout_width="wrap_content"
@@ -16,6 +17,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.3" />
 
+    <!-- White panel -->
     <FrameLayout
         android:id="@+id/bottomSheet"
         android:layout_width="0dp"
@@ -26,16 +28,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Content -->
         <LinearLayout
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical"
             android:gravity="center_horizontal"
+            android:orientation="vertical"
             android:paddingStart="24dp"
             android:paddingEnd="24dp">
 
+            <!-- Title -->
             <TextView
                 android:id="@+id/textTitle"
                 android:layout_width="match_parent"
@@ -45,11 +49,12 @@
                 android:lineSpacingExtra="2dp"
                 android:paddingTop="65dp"
                 android:paddingBottom="8dp"
-                android:text="@string/onboard2_title"
+                android:text="@string/onboard3_title"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="24sp" />
 
+            <!-- Subtitle -->
             <TextView
                 android:id="@+id/textSubtitle"
                 android:layout_width="match_parent"
@@ -58,11 +63,12 @@
                 android:gravity="center"
                 android:lineSpacingExtra="2dp"
                 android:paddingBottom="20dp"
-                android:text="@string/onboard2_description"
+                android:text="@string/onboard3_description"
                 android:textAlignment="center"
                 android:textColor="@color/gray"
                 android:textSize="16sp" />
 
+            <!-- Dots (third active for screen 3) -->
             <LinearLayout
                 android:id="@+id/dotsContainer"
                 android:layout_width="wrap_content"
@@ -71,27 +77,30 @@
                 android:gravity="center"
                 android:layout_marginBottom="20dp">
 
+                <!-- Inactive -->
                 <View
                     android:layout_width="8dp"
                     android:layout_height="8dp"
                     android:layout_margin="6dp"
                     android:background="@drawable/dot_inactive" />
 
+                <!-- Inactive -->
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/dot_inactive" />
+
+                <!-- Active (wider pill) -->
                 <View
                     android:layout_width="24dp"
                     android:layout_height="8dp"
                     android:layout_margin="6dp"
                     android:background="@drawable/dot_active" />
-
-                <View
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_margin="6dp"
-                    android:background="@drawable/dot_inactive" />
             </LinearLayout>
-
         </LinearLayout>
 
+        <!-- Button row at bottom -->
         <LinearLayout
             android:id="@+id/buttonRow"
             android:layout_width="match_parent"
@@ -122,7 +131,7 @@
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                app:srcCompat="@drawable/nextbtn" />
+                app:srcCompat="@drawable/getstartbtn" />
         </LinearLayout>
 
     </FrameLayout>

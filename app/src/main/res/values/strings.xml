@@ -4,4 +4,6 @@
     <string name="onboard1_description">Stay on track by adding, editing, and completing your daily habits with progress tracking!</string>
     <string name="onboard2_title">Good vibes, keep going - Track Your Moods!</string>
     <string name="onboard2_description">Log your emotions with emojis and notes, and reflect on your mental well-being Celebrate your peace.</string>
+    <string name="onboard3_title">Stay Hydrated - Track Your Water Intake!</string>
+    <string name="onboard3_description">Receive smart reminders to drink water Set daily goals, log your water, and keep your body refreshed.</string>
 </resources>

@@ -31,7 +31,7 @@ class OnboardScreen1 : AppCompatActivity() {
         // Handle Next button click → open OnboardScreen2
         val nextBtn = findViewById<android.widget.ImageView>(R.id.btnNext)
         nextBtn.setOnClickListener {
-            val intent = Intent(this, onboardScreen2::class.java)
+            val intent = Intent(this, OnboardScreen2::class.java)
             startActivity(intent)
             finish() // optional: close OnboardScreen1 so user can’t go back
         }
