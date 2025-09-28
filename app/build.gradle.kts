@@ -45,4 +45,14 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation ("com.google.android.material:material:1.11.0")
+    
+    // Gson for JSON serialization
+    implementation("com.google.code.gson:gson:2.10.1")
+    
+    // RecyclerView for habit lists
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    
+    // WorkManager for background tasks
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }
