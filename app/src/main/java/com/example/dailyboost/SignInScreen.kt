@@ -2,6 +2,7 @@ package com.example.dailyboost
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +27,14 @@ class SignInScreen : AppCompatActivity() {
         txtSignUp.setOnClickListener {
             val intent = Intent(this, SignUpScreen::class.java)
             startActivity(intent)
+        }
+
+        // Navigate to HomeScreen when "Sign In" button is clicked
+        val btnSignIn = findViewById<Button>(R.id.btnSignIn)
+        btnSignIn.setOnClickListener {
+            val intent = Intent(this, HomeScreen::class.java)
+            startActivity(intent)
+            finish() // optional: prevents going back to sign in screen with back button
         }
     }
 }
