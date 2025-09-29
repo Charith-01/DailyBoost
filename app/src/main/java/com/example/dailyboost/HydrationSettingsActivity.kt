@@ -11,8 +11,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -30,13 +28,6 @@ class HydrationSettingsActivity : AppCompatActivity() {
     private lateinit var btnSave: MaterialButton
     private lateinit var btnCancel: MaterialButton
 
-    private lateinit var chipGroupPresets: ChipGroup
-    private lateinit var chip30m: Chip
-    private lateinit var chip1h: Chip
-    private lateinit var chip90m: Chip
-    private lateinit var chip2h: Chip
-    private lateinit var chipCustom: Chip
-
     private var minutes: Int = 120
     private var suppressTextWatcher = false
 
@@ -46,14 +37,12 @@ class HydrationSettingsActivity : AppCompatActivity() {
 
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
 
-        // Push toolbar content below status bar / camera cutout
+        // Push toolbar content below status bar / cutouts (no back button)
         ViewCompat.setOnApplyWindowInsetsListener(toolbar) { v, insets ->
             val sb = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             v.setPadding(v.paddingLeft, sb.top, v.paddingRight, v.paddingBottom)
             insets
         }
-        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
-        toolbar.navigationIcon?.setTint(resources.getColor(android.R.color.white, theme))
 
         // Views
         inputLayoutMinutes = findViewById(R.id.inputLayoutMinutes)
@@ -64,13 +53,6 @@ class HydrationSettingsActivity : AppCompatActivity() {
         btnSave = findViewById(R.id.btnSave)
         btnCancel = findViewById(R.id.btnCancel)
 
-        chipGroupPresets = findViewById(R.id.chipGroupPresets)
-        chip30m = findViewById(R.id.chip30m)
-        chip1h = findViewById(R.id.chip1h)
-        chip90m = findViewById(R.id.chip90m)
-        chip2h = findViewById(R.id.chip2h)
-        chipCustom = findViewById(R.id.chipCustom)
-
         // Load saved value (1..1440)
         minutes = max(1, HydrationPrefs.intervalMinutes(this))
         minutes = min(minutes, 24 * 60)
@@ -78,7 +60,6 @@ class HydrationSettingsActivity : AppCompatActivity() {
         // Init UI
         sliderMinutes.value = minutes.coerceIn(15, 240).toFloat()
         setInputMinutesSafe(minutes)
-        syncPresetChips(minutes)
         validateAndRender()
 
         // Slider → input
@@ -87,7 +68,6 @@ class HydrationSettingsActivity : AppCompatActivity() {
             if (minutes != v) {
                 minutes = v
                 setInputMinutesSafe(v)
-                syncPresetChips(v)
                 validateAndRender()
             }
         }
@@ -109,7 +89,6 @@ class HydrationSettingsActivity : AppCompatActivity() {
                 minutes = num.coerceIn(1, 24 * 60)
                 val sliderTarget = minutes.coerceIn(15, 240).toFloat()
                 if (sliderMinutes.value != sliderTarget) sliderMinutes.value = sliderTarget
-                syncPresetChips(minutes)
                 validateAndRender()
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -118,17 +97,6 @@ class HydrationSettingsActivity : AppCompatActivity() {
         inputMinutes.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) inputMinutes.clearFocus()
             false
-        }
-
-        // Presets
-        chip30m.setOnClickListener { setFromPreset(30) }
-        chip1h.setOnClickListener { setFromPreset(60) }
-        chip90m.setOnClickListener { setFromPreset(90) }
-        chip2h.setOnClickListener { setFromPreset(120) }
-        chipCustom.setOnClickListener {
-            chipGroupPresets.clearCheck()
-            chipCustom.isChecked = true
-            inputMinutes.requestFocus()
         }
 
         // Buttons
@@ -146,31 +114,11 @@ class HydrationSettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun setFromPreset(v: Int) {
-        minutes = v
-        setInputMinutesSafe(v)
-        sliderMinutes.value = v.coerceIn(15, 240).toFloat()
-        syncPresetChips(v)
-        validateAndRender()
-    }
-
     private fun setInputMinutesSafe(v: Int) {
         suppressTextWatcher = true
         inputMinutes.setText(v.toString())
         inputMinutes.setSelection(inputMinutes.text?.length ?: 0)
         suppressTextWatcher = false
-    }
-
-    private fun syncPresetChips(v: Int) {
-        val matched = when (v) {
-            30 -> chip30m
-            60 -> chip1h
-            90 -> chip90m
-            120 -> chip2h
-            else -> null
-        }
-        chipGroupPresets.clearCheck()
-        if (matched != null) matched.isChecked = true else chipCustom.isChecked = true
     }
 
     private fun validateAndRender() {

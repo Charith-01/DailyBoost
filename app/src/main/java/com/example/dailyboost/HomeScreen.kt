@@ -120,11 +120,6 @@ class HomeScreen : AppCompatActivity() {
             }
         }
 
-        // Optional hint
-        hydrationSub?.setOnClickListener {
-            Toast.makeText(this, "Tap the card to adjust interval 👉", Toast.LENGTH_SHORT).show()
-        }
-
         // Today's Habits preview
         val rvHome = findViewById<RecyclerView>(R.id.rvHabitsToday)
         rvHome.layoutManager = LinearLayoutManager(this)

@@ -6,11 +6,12 @@
     android:layout_height="match_parent"
     android:background="@color/secondary">
 
-    <!-- Top App Bar -->
+    <!-- Top App Bar (no back button) -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/secondary"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -18,13 +19,23 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:background="@color/primary"
+            android:layout_height="140dp"
+            android:background="@drawable/bg_gradient_toolbar"
             app:title="Hydration Reminder"
             app:titleCentered="true"
             app:titleTextColor="@android:color/white"
             app:titleTextAppearance="@style/ToolbarTitleText"
-            app:navigationIcon="@android:drawable/ic_media_previous"/>
+            app:elevation="0dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"/>
+
+        <!-- Decorative wave (optional, keep if drawable exists) -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_gravity="bottom"
+            android:src="@drawable/wave_divider"
+            android:scaleType="fitXY"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Content -->
@@ -35,6 +46,7 @@
         android:fillViewport="true"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/appBar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,127 +56,85 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="24dp">
-
-            <!-- Presets -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="20dp"
-                app:strokeColor="@color/primary"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Quick presets"
-                        android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/poppins_semibold"/>
-
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/chipGroupPresets"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        app:singleSelection="true"
-                        app:singleLine="false"
-                        app:chipSpacingHorizontal="8dp"
-                        app:chipSpacingVertical="8dp">
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chip30m"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:text="30 min"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chip1h"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:text="1 hour"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chip90m"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:text="1.5 hours"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chip2h"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:text="2 hours"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chipCustom"
-                            style="@style/Widget.MaterialComponents.Chip.Choice"
-                            android:text="Custom…"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.chip.ChipGroup>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            android:paddingBottom="32dp">
 
             <!-- Fine-tune -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="20dp"
-                app:strokeColor="@color/primary"
-                app:strokeWidth="1dp">
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/secondary"
+                app:strokeColor="@color/accent"
+                app:strokeWidth="2dp"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Fine-tune"
                         android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/poppins_semibold"/>
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:drawablePadding="8dp"
+                        android:drawableStart="@drawable/ic_tune"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutMinutes"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:hint="Minutes">
+                        android:layout_marginTop="20dp"
+                        android:hint="Minutes"
+                        app:boxCornerRadiusBottomEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxStrokeColor="@color/primary"
+                        app:hintTextColor="@color/gray"
+                        app:startIconDrawable="@drawable/ic_timer"
+                        app:startIconTint="@color/primary"
+                        app:boxBackgroundColor="@color/accent">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/inputMinutes"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="number"
-                            android:maxLength="4"/>
+                            android:maxLength="4"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="14dp"
+                            android:paddingBottom="14dp"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.slider.Slider
                         android:id="@+id/sliderMinutes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="24dp"
                         android:valueFrom="15"
                         android:valueTo="240"
                         android:value="120"
-                        android:stepSize="5"/>
+                        android:stepSize="5"
+                        app:trackHeight="6dp"
+                        app:thumbRadius="14dp"
+                        app:thumbColor="@color/primary"
+                        app:trackColorInactive="@color/accent"
+                        app:trackColorActive="@color/primary"
+                        app:haloColor="@color/primary_20"
+                        app:labelBehavior="withinBounds"
+                        app:labelStyle="@style/SliderLabel"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -173,28 +143,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                app:cardCornerRadius="20dp"
-                app:strokeColor="@color/primary"
-                app:strokeWidth="1dp">
+                app:cardCornerRadius="24dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/secondary"
+                app:strokeColor="@color/accent"
+                app:strokeWidth="2dp"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Summary"
                         android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/poppins_semibold"/>
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:drawablePadding="8dp"
+                        android:drawableStart="@drawable/ic_summary"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="20dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -202,25 +178,31 @@
                             android:id="@+id/pillEvery"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/bg_pill"
-                            android:paddingLeft="12dp"
-                            android:paddingRight="12dp"
-                            android:paddingTop="6dp"
-                            android:paddingBottom="6dp"
+                            android:background="@drawable/bg_pill_modern"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
                             android:text="Every 2 hours"
                             android:textColor="@color/primary"
-                            android:textSize="13sp"
-                            android:fontFamily="@font/poppins_semibold"/>
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:drawableStart="@drawable/ic_water_drop"
+                            android:drawablePadding="6dp"/>
 
                         <TextView
                             android:id="@+id/summaryNextAt"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
                             android:text="Next at 12:22 PM"
                             android:textColor="@color/gray"
-                            android:textSize="13sp"
-                            android:fontFamily="@font/poppins_medium"/>
+                            android:textSize="14sp"
+                            android:fontFamily="@font/poppins_medium"
+                            android:drawableStart="@drawable/ic_clock"
+                            android:drawablePadding="6dp"/>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -229,29 +211,44 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="28dp"
                 android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCancel"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:layout_weight="1"
-                    app:cornerRadius="16dp"
-                    android:text="Cancel" />
+                    app:cornerRadius="20dp"
+                    android:text="Cancel"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:strokeColor="@color/primary"
+                    app:strokeWidth="2dp"
+                    app:rippleColor="@color/primary_20"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:drawableStart="@drawable/ic_close"
+                    android:drawablePadding="8dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSave"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:layout_weight="1"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="16dp"
                     android:text="Save"
-                    app:cornerRadius="16dp"
+                    app:cornerRadius="20dp"
                     app:backgroundTint="@color/primary"
                     android:textColor="@color/secondary"
-                    android:fontFamily="@font/poppins_semibold"/>
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/poppins_semibold"
+                    app:rippleColor="@color/primary_dark"
+                    android:drawableStart="@drawable/ic_check"
+                    android:drawablePadding="8dp"
+                    app:elevation="4dp"/>
             </LinearLayout>
 
         </LinearLayout>

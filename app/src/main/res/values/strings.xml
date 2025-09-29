@@ -40,7 +40,6 @@
     <string name="already_have_an_account">Already have an account?</string>
     <string name="sign_in1">Sign In</string>
     <string name="habits_title">Habits</string>
-    <string name="edit_habit">Edit Habit</string>
     <string name="habit_title">Habit title</string>
     <string name="enter_title">Enter a title</string>
     <string name="habit_type">Type</string>

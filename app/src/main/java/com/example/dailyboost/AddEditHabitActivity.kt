@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class AddEditHabitActivity : AppCompatActivity() {
@@ -18,6 +22,19 @@ class AddEditHabitActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_edit_habit)
 
+        // Toolbar + safe insets
+        val appBar = findViewById<View>(R.id.appBar)
+        ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
+            val sb = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            v.setPadding(v.paddingLeft, sb.top, v.paddingRight, v.paddingBottom)
+            insets
+        }
+
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false) // 👈 hide app label ("DailyBoost")
+        toolbar.title = null
+
         val titleBar = findViewById<TextView>(R.id.titleBar)
         val inputTitle = findViewById<EditText>(R.id.inputTitle)
         val groupType = findViewById<RadioGroup>(R.id.groupType)
@@ -27,7 +44,7 @@ class AddEditHabitActivity : AppCompatActivity() {
         val inputGoal = findViewById<EditText>(R.id.inputGoal)
         val switchActive = findViewById<SwitchMaterial>(R.id.switchActive)
         val btnSave = findViewById<Button>(R.id.btnSave)
-        val btnDelete = findViewById<TextView>(R.id.btnDelete)
+        val btnDelete = findViewById<MaterialButton>(R.id.btnDelete)
 
         // Show/Hide goal field based on type
         groupType.setOnCheckedChangeListener { _, checkedId ->
@@ -37,7 +54,7 @@ class AddEditHabitActivity : AppCompatActivity() {
         // Edit mode?
         val habitId = intent.getStringExtra(EXTRA_HABIT_ID)
         if (!habitId.isNullOrEmpty()) {
-            titleBar.text = getString(R.string.edit_habit)
+            titleBar.text = getString(R.string.manage_habits)
             editingHabit = HabitStore.loadHabits(this).find { it.id == habitId }
             editingHabit?.let { h ->
                 inputTitle.setText(h.title)
@@ -75,7 +92,6 @@ class AddEditHabitActivity : AppCompatActivity() {
                 existing.type = type
                 existing.goalPerDay = goal
                 existing.isActive = active
-                // keep today's progress unless goal shrinks below it
                 if (existing.progressToday > goal) existing.progressToday = goal
                 HabitStore.updateHabit(this, existing)
             }
