@@ -5,7 +5,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.View // ADDED: for findViewById<View>
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
@@ -17,7 +19,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.switchmaterial.SwitchMaterial
 
@@ -29,7 +30,7 @@ class HomeScreen : AppCompatActivity() {
     private var switchHydration: SwitchMaterial? = null
     private var hydrationSub: TextView? = null
 
-    // Runtime permission (Android 13+)
+    // Android 13+ notification permission
     private val requestNotifPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -37,10 +38,7 @@ class HomeScreen : AppCompatActivity() {
             HydrationScheduler.enable(this, HydrationPrefs.intervalMinutes(this))
             updateHydrationRow()
             Toast.makeText(this, "Hydration reminders enabled", Toast.LENGTH_SHORT).show()
-
-            // DEV: quick test notification after 30s (remove later if you want)
-            HydrationTest.scheduleTestReminder(this, 30)
-            Toast.makeText(this, "Test reminder in 30s (dev only)", Toast.LENGTH_SHORT).show()
+            HydrationTest.scheduleTestReminder(this, 30) // dev helper
         } else {
             switchHydration?.isChecked = false
             Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
@@ -79,25 +77,19 @@ class HomeScreen : AppCompatActivity() {
         findViewById<TextView>(R.id.btnSeeAllHabits)?.setOnClickListener {
             startActivity(Intent(this, HabitsActivity::class.java))
         }
-
-        // Open Hydration settings when the whole card is tapped
         findViewById<View>(R.id.cardHydration).setOnClickListener {
             startActivity(Intent(this, HydrationSettingsActivity::class.java))
         }
 
-        // ===== Hydration: init channel, refs, and toggle =====
+        // Hydration init
         NotificationHelper.createChannel(this)
         switchHydration = findViewById(R.id.switchHydration)
         hydrationSub = findViewById(R.id.hydrationSub)
-
-        // Apply saved state
         switchHydration?.isChecked = HydrationPrefs.isEnabled(this)
         updateHydrationRow()
 
-        // Toggle behavior
         switchHydration?.setOnCheckedChangeListener { _, checked ->
             if (checked) {
-                // Android 13+ needs POST_NOTIFICATIONS permission
                 if (Build.VERSION.SDK_INT >= 33 &&
                     ContextCompat.checkSelfPermission(
                         this, Manifest.permission.POST_NOTIFICATIONS
@@ -108,10 +100,7 @@ class HomeScreen : AppCompatActivity() {
                     HydrationScheduler.enable(this, HydrationPrefs.intervalMinutes(this))
                     updateHydrationRow()
                     Toast.makeText(this, "Hydration reminders enabled", Toast.LENGTH_SHORT).show()
-
-                    // DEV: quick test notification after 30s (remove later if you want)
-                    HydrationTest.scheduleTestReminder(this, 30)
-                    Toast.makeText(this, "Test reminder in 30s", Toast.LENGTH_SHORT).show()
+                    HydrationTest.scheduleTestReminder(this, 30) // dev helper
                 }
             } else {
                 HydrationScheduler.disable(this)
@@ -150,10 +139,9 @@ class HomeScreen : AppCompatActivity() {
         super.onResume()
         refreshHomeStats()
         refreshHomePreview()
-        updateHydrationRow() // updates subtitle after returning from settings
+        updateHydrationRow()
     }
 
-    // ---- Hydration helpers ----
     private fun updateHydrationRow() {
         val enabled = HydrationPrefs.isEnabled(this)
         switchHydration?.isChecked = enabled
@@ -164,7 +152,6 @@ class HomeScreen : AppCompatActivity() {
         }
     }
 
-    // ---- Existing code below ----
     private fun refreshHomeStats() {
         HabitStore.resetIfNewDay(this)
 
@@ -194,7 +181,7 @@ class HomeScreen : AppCompatActivity() {
         homeRvAdapter.submit(topHabits)
     }
 
-    // Adapter for Home "Today's Habits" preview
+    // ---------------- Adapter (Home preview) ----------------
     private class HomeHabitsAdapter(
         private val onIncrement: (String) -> Unit,
         private val onToggle: (String, Boolean) -> Unit,
@@ -209,17 +196,17 @@ class HomeScreen : AppCompatActivity() {
             notifyDataSetChanged()
         }
 
-        inner class Holder(v: android.view.View) : RecyclerView.ViewHolder(v) {
+        inner class Holder(v: View) : RecyclerView.ViewHolder(v) {
             val icon: TextView = v.findViewById(R.id.habitIcon)
             val title: TextView = v.findViewById(R.id.txtTitle)
             val progressLabel: TextView = v.findViewById(R.id.txtProgress)
             val bar: LinearProgressIndicator = v.findViewById(R.id.progressBar)
-            val btnPlus: MaterialButton = v.findViewById(R.id.btnIncrement)
+            val btnPlus: View = v.findViewById(R.id.btnIncrement)   // <-- now View
             val chkDone: CheckBox = v.findViewById(R.id.chkDone)
         }
 
-        override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): Holder {
-            val v = android.view.LayoutInflater.from(parent.context)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+            val v = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_habit, parent, false)
             return Holder(v)
         }
@@ -229,9 +216,7 @@ class HomeScreen : AppCompatActivity() {
         override fun onBindViewHolder(h: Holder, position: Int) {
             val item = items[position]
 
-            // Dynamic emoji (simple mapping by title; replace with a field if you add one)
             h.icon.text = emojiFor(item.title)
-
             h.title.text = item.title
 
             val goal = item.goalPerDay.coerceAtLeast(1)
@@ -243,12 +228,12 @@ class HomeScreen : AppCompatActivity() {
             h.bar.progress = pct
 
             if (item.type == HabitType.COUNT) {
-                h.btnPlus.visibility = android.view.View.VISIBLE
-                h.chkDone.visibility = android.view.View.GONE
+                h.btnPlus.visibility = View.VISIBLE
+                h.chkDone.visibility = View.GONE
                 h.btnPlus.setOnClickListener { onIncrement(item.id) }
             } else {
-                h.btnPlus.visibility = android.view.View.GONE
-                h.chkDone.visibility = android.view.View.VISIBLE
+                h.btnPlus.visibility = View.GONE
+                h.chkDone.visibility = View.VISIBLE
                 h.chkDone.setOnCheckedChangeListener(null)
                 h.chkDone.isChecked = (prog >= goal)
                 h.chkDone.setOnCheckedChangeListener { _, checked ->

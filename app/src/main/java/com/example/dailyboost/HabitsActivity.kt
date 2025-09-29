@@ -17,7 +17,6 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
 
@@ -29,21 +28,17 @@ class HabitsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Draw edge-to-edge
         enableEdgeToEdge()
         setContentView(R.layout.activity_habits)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         rv = findViewById(R.id.rvHabits)
 
-        // ---- FIX: let the toolbar sit under an opaque status bar, so title is visible
+        // Keep toolbar readable (opaque status bar over brand color)
         window.statusBarColor = ContextCompat.getColor(this, R.color.primary)
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
-        // Remove any manual inset padding on the toolbar (was hiding the title)
         ViewCompat.setOnApplyWindowInsetsListener(toolbar, null)
 
-        // Keep bottom inset for RecyclerView so last item isn’t behind the gesture bar
         ViewCompat.setOnApplyWindowInsetsListener(rv) { v, insets ->
             val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(bottom = v.paddingBottom + sys.bottom)
@@ -101,7 +96,7 @@ private class HabitAdapter(
         val title: TextView = v.findViewById(R.id.txtTitle)
         val progressLabel: TextView = v.findViewById(R.id.txtProgress)
         val bar: LinearProgressIndicator = v.findViewById(R.id.progressBar)
-        val btnPlus: MaterialButton = v.findViewById(R.id.btnIncrement)
+        val btnPlus: View = v.findViewById(R.id.btnIncrement)   // <-- now View
         val chkDone: CheckBox = v.findViewById(R.id.chkDone)
     }
 
@@ -116,7 +111,6 @@ private class HabitAdapter(
     override fun onBindViewHolder(h: Holder, position: Int) {
         val item = items[position]
 
-        // Dynamic emoji for the Habits list screen
         h.icon.text = emojiFor(item.title)
         h.title.text = item.title
 
