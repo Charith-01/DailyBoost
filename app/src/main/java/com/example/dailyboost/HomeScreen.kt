@@ -1,21 +1,51 @@
 package com.example.dailyboost
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.view.View // ADDED: for findViewById<View>
 import android.widget.CheckBox
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class HomeScreen : AppCompatActivity() {
 
     private lateinit var homeRvAdapter: HomeHabitsAdapter
+
+    // Hydration UI refs
+    private var switchHydration: SwitchMaterial? = null
+    private var hydrationSub: TextView? = null
+
+    // Runtime permission (Android 13+)
+    private val requestNotifPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            HydrationScheduler.enable(this, HydrationPrefs.intervalMinutes(this))
+            updateHydrationRow()
+            Toast.makeText(this, "Hydration reminders enabled", Toast.LENGTH_SHORT).show()
+
+            // DEV: quick test notification after 30s (remove later if you want)
+            HydrationTest.scheduleTestReminder(this, 30)
+            Toast.makeText(this, "Test reminder in 30s (dev only)", Toast.LENGTH_SHORT).show()
+        } else {
+            switchHydration?.isChecked = false
+            Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,19 +53,19 @@ class HomeScreen : AppCompatActivity() {
         setContentView(R.layout.activity_home_screen)
 
         // Insets
-        val appBar = findViewById<android.view.View>(R.id.appBar)
+        val appBar = findViewById<View>(R.id.appBar)
         ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
             val sb = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             v.setPadding(v.paddingLeft, sb.top, v.paddingRight, v.paddingBottom)
             insets
         }
-        val scroll = findViewById<android.view.View>(R.id.scroll)
+        val scroll = findViewById<View>(R.id.scroll)
         ViewCompat.setOnApplyWindowInsetsListener(scroll) { v, insets ->
             val nb = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, nb.bottom)
             insets
         }
-        val fab = findViewById<android.view.View>(R.id.fabAdd)
+        val fab = findViewById<View>(R.id.fabAdd)
         ViewCompat.setOnApplyWindowInsetsListener(fab) { v, insets ->
             val nb = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, nb.bottom)
@@ -48,6 +78,51 @@ class HomeScreen : AppCompatActivity() {
         }
         findViewById<TextView>(R.id.btnSeeAllHabits)?.setOnClickListener {
             startActivity(Intent(this, HabitsActivity::class.java))
+        }
+
+        // Open Hydration settings when the whole card is tapped
+        findViewById<View>(R.id.cardHydration).setOnClickListener {
+            startActivity(Intent(this, HydrationSettingsActivity::class.java))
+        }
+
+        // ===== Hydration: init channel, refs, and toggle =====
+        NotificationHelper.createChannel(this)
+        switchHydration = findViewById(R.id.switchHydration)
+        hydrationSub = findViewById(R.id.hydrationSub)
+
+        // Apply saved state
+        switchHydration?.isChecked = HydrationPrefs.isEnabled(this)
+        updateHydrationRow()
+
+        // Toggle behavior
+        switchHydration?.setOnCheckedChangeListener { _, checked ->
+            if (checked) {
+                // Android 13+ needs POST_NOTIFICATIONS permission
+                if (Build.VERSION.SDK_INT >= 33 &&
+                    ContextCompat.checkSelfPermission(
+                        this, Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    requestNotifPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    HydrationScheduler.enable(this, HydrationPrefs.intervalMinutes(this))
+                    updateHydrationRow()
+                    Toast.makeText(this, "Hydration reminders enabled", Toast.LENGTH_SHORT).show()
+
+                    // DEV: quick test notification after 30s (remove later if you want)
+                    HydrationTest.scheduleTestReminder(this, 30)
+                    Toast.makeText(this, "Test reminder in 30s", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                HydrationScheduler.disable(this)
+                updateHydrationRow()
+                Toast.makeText(this, "Hydration reminders disabled", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Optional hint
+        hydrationSub?.setOnClickListener {
+            Toast.makeText(this, "Tap the card to adjust interval 👉", Toast.LENGTH_SHORT).show()
         }
 
         // Today's Habits preview
@@ -80,8 +155,21 @@ class HomeScreen : AppCompatActivity() {
         super.onResume()
         refreshHomeStats()
         refreshHomePreview()
+        updateHydrationRow() // updates subtitle after returning from settings
     }
 
+    // ---- Hydration helpers ----
+    private fun updateHydrationRow() {
+        val enabled = HydrationPrefs.isEnabled(this)
+        switchHydration?.isChecked = enabled
+        hydrationSub?.text = if (enabled) {
+            HydrationScheduler.nextLabel(this)
+        } else {
+            "Reminders off"
+        }
+    }
+
+    // ---- Existing code below ----
     private fun refreshHomeStats() {
         HabitStore.resetIfNewDay(this)
 

@@ -17,4 +17,9 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">20sp</item> <!-- adjust size if needed -->
     </style>
+
+    <style name="ToolbarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="fontFamily">@font/poppins_semibold</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

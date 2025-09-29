@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Hydration: notifications (Tiramisu/33+) and reboot handling -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,14 +27,14 @@
             android:name=".HomeScreen"
             android:exported="false" />
 
-        <!-- ✅ New: Habits screens -->
+        <!-- ✅ Habits screens -->
         <activity
             android:name=".HabitsActivity"
             android:exported="false" />
         <activity
             android:name=".AddEditHabitActivity"
             android:exported="false" />
-        <!-- ✅ End new -->
+        <!-- ✅ End Habits -->
 
         <activity
             android:name=".OnboardScreen3"
@@ -49,6 +53,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 🔔 Hydration: re-assert scheduling after reboot -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".HydrationSettingsActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="preloaded_fonts"

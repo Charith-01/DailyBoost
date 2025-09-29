@@ -1,0 +1,7 @@
+<resources>
+    <string-array name="hydration_units">
+        <item>Seconds</item>
+        <item>Minutes</item>
+        <item>Hours</item>
+    </string-array>
+</resources>
