@@ -54,6 +54,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".MoodHistoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AddMoodActivity"
+            android:exported="false" />
+
         <!-- 🔔 Hydration: re-assert scheduling after reboot -->
         <receiver
             android:name=".BootReceiver"

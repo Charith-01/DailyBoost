@@ -250,6 +250,16 @@
                     android:fontFamily="@font/poppins_semibold"/>
 
                 <TextView
+                    android:id="@+id/btnAddMood"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add mood"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:layout_marginEnd="14dp"/>
+
+                <TextView
                     android:id="@+id/btnMoodHistory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -284,6 +294,7 @@
                 app:cardElevation="2dp">
 
                 <TextView
+                    android:id="@+id/txtMoodTrend"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/poppins_medium"

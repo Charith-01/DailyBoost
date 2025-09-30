@@ -1,6 +1,7 @@
 package com.example.dailyboost
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -9,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -45,6 +47,7 @@ class HomeScreen : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -109,6 +112,41 @@ class HomeScreen : AppCompatActivity() {
             }
         }
 
+        // ---------- Quick Mood: save on tap; open editor on long-press ----------
+        findViewById<LinearLayout>(R.id.moodChips)?.let { row ->
+            for (i in 0 until row.childCount) {
+                val tv = row.getChildAt(i) as? TextView ?: continue
+
+                // Quick save on tap
+                tv.setOnClickListener {
+                    val face = tv.text?.toString().orEmpty()
+                    MoodStore.add(this, face)
+                    Toast.makeText(this, "Mood saved $face", Toast.LENGTH_SHORT).show()
+                    refreshMoodTrend()
+                }
+
+                // Long-press to open AddMood with pre-selected emoji and optional note
+                tv.setOnLongClickListener {
+                    val face = tv.text?.toString().orEmpty()
+                    startActivity(
+                        Intent(this, AddMoodActivity::class.java)
+                            .putExtra(AddMoodActivity.EXTRA_PRESELECT_EMOJI, face)
+                    )
+                    true
+                }
+            }
+        }
+
+        // Open full Add Mood screen
+        findViewById<TextView>(R.id.btnAddMood)?.setOnClickListener {
+            startActivity(Intent(this, AddMoodActivity::class.java))
+        }
+
+        // Mood history
+        findViewById<TextView>(R.id.btnMoodHistory)?.setOnClickListener {
+            startActivity(Intent(this, MoodHistoryActivity::class.java))
+        }
+
         // Today's Habits preview
         val rvHome = findViewById<RecyclerView>(R.id.rvHabitsToday)
         rvHome.layoutManager = LinearLayoutManager(this)
@@ -133,6 +171,7 @@ class HomeScreen : AppCompatActivity() {
         // First load
         refreshHomeStats()
         refreshHomePreview()
+        refreshMoodTrend()
     }
 
     override fun onResume() {
@@ -140,6 +179,7 @@ class HomeScreen : AppCompatActivity() {
         refreshHomeStats()
         refreshHomePreview()
         updateHydrationRow()
+        refreshMoodTrend()
     }
 
     private fun updateHydrationRow() {
@@ -181,6 +221,18 @@ class HomeScreen : AppCompatActivity() {
         homeRvAdapter.submit(topHabits)
     }
 
+    private fun refreshMoodTrend() {
+        val tv = findViewById<TextView>(R.id.txtMoodTrend) ?: return
+        val avg = MoodStore.averageLast7(this)
+        tv.text = if (avg == null) {
+            "📊 Weekly Mood Trend • No data yet"
+        } else {
+            val face = MoodStore.emojiForScore(avg)
+            val label = String.format("%.1f", avg)
+            "📊 Weekly Mood Trend • $face  $label / 5"
+        }
+    }
+
     // ---------------- Adapter (Home preview) ----------------
     private class HomeHabitsAdapter(
         private val onIncrement: (String) -> Unit,
@@ -201,7 +253,7 @@ class HomeScreen : AppCompatActivity() {
             val title: TextView = v.findViewById(R.id.txtTitle)
             val progressLabel: TextView = v.findViewById(R.id.txtProgress)
             val bar: LinearProgressIndicator = v.findViewById(R.id.progressBar)
-            val btnPlus: View = v.findViewById(R.id.btnIncrement)   // <-- now View
+            val btnPlus: View = v.findViewById(R.id.btnIncrement)
             val chkDone: CheckBox = v.findViewById(R.id.chkDone)
         }
 
