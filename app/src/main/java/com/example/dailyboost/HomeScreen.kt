@@ -16,6 +16,20 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -23,6 +37,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.switchmaterial.SwitchMaterial
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class HomeScreen : AppCompatActivity() {
 
@@ -123,6 +140,7 @@ class HomeScreen : AppCompatActivity() {
                     MoodStore.add(this, face)
                     Toast.makeText(this, "Mood saved $face", Toast.LENGTH_SHORT).show()
                     refreshMoodTrend()
+                    renderComposeChart() // refresh chart
                 }
 
                 // Long-press to open AddMood with pre-selected emoji and optional note
@@ -146,6 +164,9 @@ class HomeScreen : AppCompatActivity() {
         findViewById<TextView>(R.id.btnMoodHistory)?.setOnClickListener {
             startActivity(Intent(this, MoodHistoryActivity::class.java))
         }
+
+        // Compose chart initial render
+        renderComposeChart()
 
         // Today's Habits preview
         val rvHome = findViewById<RecyclerView>(R.id.rvHabitsToday)
@@ -180,6 +201,7 @@ class HomeScreen : AppCompatActivity() {
         refreshHomePreview()
         updateHydrationRow()
         refreshMoodTrend()
+        renderComposeChart()
     }
 
     private fun updateHydrationRow() {
@@ -230,6 +252,21 @@ class HomeScreen : AppCompatActivity() {
             val face = MoodStore.emojiForScore(avg)
             val label = String.format("%.1f", avg)
             "📊 Weekly Mood Trend • $face  $label / 5"
+        }
+    }
+
+    /** Render the Compose chart inside the ComposeView */
+    private fun renderComposeChart() {
+        val composeView =
+            findViewById<androidx.compose.ui.platform.ComposeView>(R.id.moodComposeView)
+        composeView.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+        val data = MoodStore.listAll(this)
+        composeView.setContent {
+            Surface(color = Color.Transparent) {
+                MoodBarChart7Day(data)
+            }
         }
     }
 
@@ -303,6 +340,90 @@ class HomeScreen : AppCompatActivity() {
             title.contains("walk", true)  -> "🚶"
             title.contains("meditat", true)-> "🧘"
             else                          -> "✅"
+        }
+    }
+}
+
+/* -------------------- Compose chart (inline) -------------------- */
+
+@Composable
+private fun MoodBarChart7Day(data: List<MoodEntry>) {
+    val days = 7
+    val labels = mutableListOf<String>()
+    val scores = FloatArray(days) { 0f }
+
+    // Build 7-day window keys & labels (oldest -> newest)
+    val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
+    val cal = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -6) }
+    val keys = IntArray(days)
+    for (i in 0 until days) {
+        keys[i] = cal.get(Calendar.YEAR) * 10000 +
+                (cal.get(Calendar.MONTH) + 1) * 100 +
+                cal.get(Calendar.DAY_OF_MONTH)
+        labels.add(dayFormat.format(cal.time))
+        cal.add(Calendar.DAY_OF_YEAR, 1)
+    }
+
+    // Bucket moods to each day
+    val byDay = HashMap<Int, MutableList<Int>>()
+    for (e in data) {
+        val c = Calendar.getInstance().apply { timeInMillis = e.timestamp }
+        val k = c.get(Calendar.YEAR) * 10000 +
+                (c.get(Calendar.MONTH) + 1) * 100 +
+                c.get(Calendar.DAY_OF_MONTH)
+        if (keys.contains(k)) {
+            byDay.getOrPut(k) { mutableListOf() }.add(MoodStore.scoreForEmoji(e.emoji))
+        }
+    }
+
+    // Average per day
+    for (i in 0 until days) {
+        val list = byDay[keys[i]]
+        scores[i] = if (!list.isNullOrEmpty()) {
+            list.sum().toFloat() / list.size
+        } else 0f
+    }
+
+    // Simple, modern bar chart
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            for (i in 0 until days) {
+                val h = (scores[i] / 5f).coerceIn(0f, 1f)
+                val barHeight = (h * 140f).dp
+                val barColor =
+                    if (h == 0f) Color(0xFFE6E1F7)
+                    else MaterialTheme.colorScheme.primary
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(barHeight)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(barColor)
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = labels[i],
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium)
+                    )
+                }
+            }
         }
     }
 }
