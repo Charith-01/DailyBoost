@@ -53,4 +53,11 @@
     <string name="done">Done</string>
     <string name="title_required">Title is required</string>
     <string name="manage_habits">Manage Habits</string>
+    <string name="error_full_name_required">Please enter your full name</string>
+    <string name="error_invalid_email">Please enter a valid email</string>
+    <string name="error_password_short">Password must be at least 6 characters</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_accept_terms">Please accept the Terms and Privacy Policy</string>
+    <string name="signup_success">Account created successfully</string>
+
 </resources>

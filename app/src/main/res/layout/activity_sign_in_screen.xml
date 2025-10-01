@@ -311,7 +311,7 @@
                 </FrameLayout>
             </LinearLayout>
 
-            <!-- Bottom line: "Don't have an account?" (black) + "Sign Up" (primary, semibold) -->
+            <!-- Bottom line -->
             <LinearLayout
                 android:id="@+id/signUpRow"
                 android:layout_width="wrap_content"

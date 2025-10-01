@@ -65,11 +65,26 @@ class HomeFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         // Status bar styling matches AppBar
         requireActivity().window.statusBarColor =
             ContextCompat.getColor(requireContext(), R.color.primary)
         WindowCompat.getInsetsController(requireActivity().window, view)
             ?.isAppearanceLightStatusBars = false
+
+        // Dynamic greeting with user name + time of day
+        val greetingView = view.findViewById<TextView>(R.id.greeting)
+        val user = AuthPrefs.getUser(requireContext())
+        val name = user?.fullName?.trim().takeUnless { it.isNullOrEmpty() } ?: "User"
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        val greetingWord = when (hour) {
+            in 5..11 -> "Good Morning"
+            in 12..16 -> "Good Afternoon"
+            in 17..21 -> "Good Evening"
+            else -> "Hello"
+        }
+        greetingView.text = "$greetingWord, $name 👋"
 
         // TOP inset -> pad the AppBar below the cutout/status bar
         val appBar = view.findViewById<View>(R.id.appBar)
@@ -169,6 +184,20 @@ class HomeFragment : Fragment() {
             ContextCompat.getColor(requireContext(), R.color.primary)
         WindowCompat.getInsetsController(requireActivity().window, view ?: return)
             ?.isAppearanceLightStatusBars = false
+
+        // Refresh greeting if user changed their name elsewhere
+        view?.findViewById<TextView>(R.id.greeting)?.let { tv ->
+            val user = AuthPrefs.getUser(requireContext())
+            val name = user?.fullName?.trim().takeUnless { it.isNullOrEmpty() } ?: "User"
+            val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+            val greetingWord = when (hour) {
+                in 5..11 -> "Good Morning"
+                in 12..16 -> "Good Afternoon"
+                in 17..21 -> "Good Evening"
+                else -> "Hello"
+            }
+            tv.text = "$greetingWord, $name 👋"
+        }
     }
 
     private fun updateHydrationRow() {
