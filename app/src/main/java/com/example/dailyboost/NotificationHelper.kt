@@ -46,7 +46,7 @@ object NotificationHelper {
         }
 
         // When tapped, open HomeScreen
-        val openIntent = Intent(ctx, HomeScreen::class.java).apply {
+        val openIntent = Intent(ctx, MainActivity::class.java).apply {
             // ensure single task feel from outside app context (e.g., from Worker)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }

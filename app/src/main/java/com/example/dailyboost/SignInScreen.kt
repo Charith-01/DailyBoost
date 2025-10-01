@@ -32,7 +32,7 @@ class SignInScreen : AppCompatActivity() {
         // Navigate to HomeScreen when "Sign In" button is clicked
         val btnSignIn = findViewById<Button>(R.id.btnSignIn)
         btnSignIn.setOnClickListener {
-            val intent = Intent(this, HomeScreen::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish() // optional: prevents going back to sign in screen with back button
         }

@@ -1,10 +1,475 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/rootProfile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileFragment">
+    android:background="@color/secondary">
 
+    <!-- Enhanced App Bar with better shadow and modern look -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:fitsSystemWindows="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:elevation="8dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@android:color/transparent"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            app:title="Profile"
+            app:titleCentered="true"
+            app:titleTextColor="@color/secondary"
+            app:titleTextAppearance="@style/ToolbarTitleStyle"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Scrollable content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollProfile"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:background="@color/secondary"
+        android:clipToPadding="false"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        app:layout_constraintTop_toBottomOf="@id/appBar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="24dp"
+            android:paddingBottom="32dp">
+
+            <!-- Enhanced Header with gradient and better spacing -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="6dp"
+                app:strokeColor="@color/primary"
+                app:strokeWidth="1dp"
+                android:foreground="?attr/selectableItemBackground"
+                app:rippleColor="@color/primary_20">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="20dp">
+
+                    <!-- Enhanced Avatar with circular gradient border -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        app:cardCornerRadius="36dp"
+                        app:strokeColor="@color/primary"
+                        app:strokeWidth="2dp"
+                        app:elevation="4dp">
+
+                        <ImageView
+                            android:id="@+id/imgAvatar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="Avatar"
+                            android:src="@drawable/profilepic"
+                            android:scaleType="centerCrop"
+                            android:padding="4dp" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Charith"
+                            android:textColor="@color/black"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppins_semibold" />
+
+                        <TextView
+                            android:id="@+id/txtEmail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="charith@mail.com"
+                            android:textColor="@color/gray"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/poppins_medium"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <!-- Edit profile button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditProfile"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Edit"
+                        android:textSize="12sp"
+                        android:textColor="@color/primary"
+                        app:strokeColor="@color/primary"
+                        app:strokeWidth="1dp"
+                        app:cornerRadius="16dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Enhanced Stats row with better spacing and modern icons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <!-- Streak Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardStatStreak"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="4dp"
+                    app:rippleColor="@color/primary_20"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="16dp">
+
+                        <!-- Icon with background -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:cardCornerRadius="20dp"
+                            app:cardBackgroundColor="@color/accent"
+                            app:elevation="2dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="🔥"
+                                android:textSize="16sp" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Streak"
+                            android:textColor="@color/gray"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/poppins_medium"
+                            android:layout_marginTop="8dp" />
+
+                        <TextView
+                            android:id="@+id/valueStreak"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:textSize="20sp"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Today Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardStatToday"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="6dp"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="4dp"
+                    app:rippleColor="@color/primary_20"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="16dp">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:cardCornerRadius="20dp"
+                            app:cardBackgroundColor="@color/accent"
+                            app:elevation="2dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="🗓️"
+                                android:textSize="16sp" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Today"
+                            android:textColor="@color/gray"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/poppins_medium"
+                            android:layout_marginTop="8dp" />
+
+                        <TextView
+                            android:id="@+id/valueToday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0/0"
+                            android:textColor="@color/black"
+                            android:textSize="20sp"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Mood Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardStatMood"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="4dp"
+                    app:rippleColor="@color/primary_20"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="16dp">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:cardCornerRadius="20dp"
+                            app:cardBackgroundColor="@color/accent"
+                            app:elevation="2dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="😊"
+                                android:textSize="16sp" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Avg Mood"
+                            android:textColor="@color/gray"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/poppins_medium"
+                            android:layout_marginTop="8dp" />
+
+                        <TextView
+                            android:id="@+id/valueMood"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="–"
+                            android:textColor="@color/black"
+                            android:textSize="20sp"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Enhanced Actions with modern Material 3 style -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <!-- Hydration Settings -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnHydration"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hydration Settings"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        android:textColor="@color/black"
+                        android:paddingVertical="16dp"
+                        android:fontFamily="@font/poppins_semibold"
+                        app:icon="@drawable/ic_water_drop"
+                        app:iconPadding="12dp"
+                        app:iconGravity="textStart"
+                        app:cornerRadius="16dp"
+                        android:backgroundTint="@android:color/transparent"
+                        app:rippleColor="@color/primary_20"
+                        app:iconTint="@color/primary" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="16dp"
+                        android:background="@color/accent" />
+
+                    <!-- Share Weekly Summary -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnShare"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Share Weekly Summary"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        android:textColor="@color/black"
+                        android:paddingVertical="16dp"
+                        android:fontFamily="@font/poppins_semibold"
+                        app:icon="@drawable/ic_summary"
+                        app:iconPadding="12dp"
+                        app:iconGravity="textStart"
+                        app:cornerRadius="16dp"
+                        android:backgroundTint="@android:color/transparent"
+                        app:rippleColor="@color/primary_20"
+                        app:iconTint="@color/primary" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="16dp"
+                        android:background="@color/accent" />
+
+                    <!-- Enhanced Logout Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLogout"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Logout"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        android:textColor="@color/red"
+                        android:paddingVertical="16dp"
+                        android:fontFamily="@font/poppins_semibold"
+                        app:icon="@drawable/ic_logout"
+                        app:iconTint="@color/red"
+                        app:iconPadding="12dp"
+                        app:iconGravity="textStart"
+                        app:cornerRadius="16dp"
+                        android:backgroundTint="@android:color/transparent"
+                        app:rippleColor="@color/primary_20" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Additional modern elements -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="More Options"
+                android:textColor="@color/gray"
+                android:textSize="14sp"
+                android:fontFamily="@font/poppins_medium"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="12dp"
+                android:paddingStart="8dp" />
+
+            <!-- Additional settings card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnNotifications"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Notification Settings"
+                        android:textAllCaps="false"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:paddingVertical="14dp"
+                        android:fontFamily="@font/poppins_medium"
+                        app:icon="@drawable/ic_notifications"
+                        app:iconPadding="10dp"
+                        app:iconGravity="textStart"
+                        app:cornerRadius="14dp"
+                        android:backgroundTint="@android:color/transparent"
+                        app:iconTint="@color/primary" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="12dp"
+                        android:background="@color/accent" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrivacy"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Privacy and Security"
+                        android:textAllCaps="false"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        android:paddingVertical="14dp"
+                        android:fontFamily="@font/poppins_medium"
+                        app:icon="@drawable/ic_privacy"
+                        app:iconPadding="10dp"
+                        app:iconGravity="textStart"
+                        app:cornerRadius="14dp"
+                        android:backgroundTint="@android:color/transparent"
+                        app:iconTint="@color/primary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

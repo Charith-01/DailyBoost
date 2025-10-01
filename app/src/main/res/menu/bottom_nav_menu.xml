@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tab_home"
+        android:icon="@drawable/ic_clock"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/tab_habits"
+        android:icon="@drawable/ic_check"
+        android:title="Habits" />
+
+    <item
+        android:id="@+id/tab_mood"
+        android:icon="@drawable/ic_summary"
+        android:title="Mood" />
+
+    <item
+        android:id="@+id/tab_profile"
+        android:icon="@drawable/ic_tune"
+        android:title="Profile" />
+</menu>

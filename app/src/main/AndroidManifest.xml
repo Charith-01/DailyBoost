@@ -37,12 +37,6 @@
             android:name=".SignInScreen"
             android:exported="false" />
         <activity
-            android:name=".HomeScreen"
-            android:exported="false" /> <!-- ✅ Habits screens -->
-        <activity
-            android:name=".HabitsActivity"
-            android:exported="false" />
-        <activity
             android:name=".AddEditHabitActivity"
             android:exported="false" /> <!-- ✅ End Habits -->
         <activity
@@ -66,9 +60,6 @@
         <activity
             android:name=".MoodHistoryActivity"
             android:exported="false" />
-        <activity
-            android:name=".AddMoodActivity"
-            android:exported="false" /> <!-- 🔔 Hydration: re-assert scheduling after reboot -->
         <receiver
             android:name=".BootReceiver"
             android:exported="true">
