@@ -8,20 +8,26 @@
     android:orientation="vertical"
     android:background="@color/secondary">
 
-    <!-- App Bar -->
+    <!-- App Bar (same logic you wanted) -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary">
+        android:background="@color/primary"
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="80dp"
             android:background="@android:color/transparent"
             android:paddingStart="16dp"
-            android:paddingEnd="16dp" />
+            android:paddingEnd="16dp"
+            app:title="Mood History"
+            app:titleCentered="true"
+            app:titleTextColor="@color/secondary"
+            app:titleTextAppearance="@style/ToolbarTitleStyle"/>
+        <!-- ToolbarTitleStyle should set @font/poppins_semibold -->
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Header -->

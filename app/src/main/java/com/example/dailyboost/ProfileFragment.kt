@@ -94,5 +94,18 @@ class ProfileFragment : Fragment() {
             }
             startActivity(Intent.createChooser(send, "Share weekly summary"))
         }
+
+        // --- Logout → navigate to SignInScreen and clear back stack ---
+        view.findViewById<MaterialButton>(R.id.btnLogout).setOnClickListener {
+            // If you maintain auth/session, clear it here (SharedPreferences, tokens, etc.)
+            // Example:
+            // getSharedPreferences("auth", Context.MODE_PRIVATE).edit().clear().apply()
+
+            val intent = Intent(requireContext(), SignInScreen::class.java).apply {
+                // Clear the whole task so user can't return via back button
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            startActivity(intent)
+        }
     }
 }

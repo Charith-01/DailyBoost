@@ -9,13 +9,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.appbar.MaterialToolbar
 import java.util.Calendar
 import java.util.Locale
 
@@ -35,12 +38,19 @@ class MoodHistoryActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_mood_history)
 
-        // Toolbar (back arrow)
-        setSupportActionBar(findViewById(R.id.toolbar))
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Mood History"
+        // Status bar matches AppBar (purple background, light icons)
+        window.statusBarColor = ContextCompat.getColor(this, R.color.primary)
+        WindowCompat.getInsetsController(window, findViewById(android.R.id.content))
+            ?.isAppearanceLightStatusBars = false
 
-        // Insets for the app bar and list
+        // Toolbar as ActionBar with back arrow; title is from XML
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        // Ensure back arrow is white
+        toolbar.navigationIcon?.setTint(ContextCompat.getColor(this, R.color.secondary))
+
+        // Insets: top for app bar, bottom for root (so list clears gesture nav)
         val appBar = findViewById<View>(R.id.appBar)
         ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
             val sb = insets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -96,7 +106,7 @@ class MoodHistoryActivity : AppCompatActivity() {
         adapter.submit(filtered)
         emptyView.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
 
-        // Optional: update subtitle with count
+        // Update subtitle with count
         val count = filtered.size
         val subtitle = when {
             chipToday.isChecked -> "Today • $count entr" + if (count == 1) "y" else "ies"
@@ -134,9 +144,7 @@ class MoodHistoryActivity : AppCompatActivity() {
     private inner class MoodAdapter : RecyclerView.Adapter<MoodAdapter.Holder>() {
         private val items = mutableListOf<MoodEntry>()
         private val timeFmt by lazy { DateFormat.getTimeFormat(this@MoodHistoryActivity) }
-        private val dateFmt by lazy {
-            android.text.format.DateFormat.getMediumDateFormat(this@MoodHistoryActivity)
-        }
+        private val dateFmt by lazy { android.text.format.DateFormat.getMediumDateFormat(this@MoodHistoryActivity) }
 
         fun submit(list: List<MoodEntry>) {
             items.clear()
@@ -164,7 +172,6 @@ class MoodHistoryActivity : AppCompatActivity() {
 
             val now = System.currentTimeMillis()
             val isToday = isSameDay(e.timestamp, now)
-
             val cal = Calendar.getInstance().apply { timeInMillis = e.timestamp }
             val timeText = timeFmt.format(cal.time)
 

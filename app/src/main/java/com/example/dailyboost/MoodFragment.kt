@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -39,26 +40,27 @@ class MoodFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // Keep status bar purple with light icons
+        // status bar style to match app bar
         requireActivity().window.statusBarColor =
             ContextCompat.getColor(requireContext(), R.color.primary)
         WindowCompat.getInsetsController(requireActivity().window, view)
             ?.isAppearanceLightStatusBars = false
 
-        // ✅ Apply TOP status-bar inset to the app bar so the 110dp toolbar sits below the cutout
-        val appBar = view.findViewById<View>(R.id.appBar)
-        ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
-            val sb = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            v.setPadding(v.paddingLeft, sb.top, v.paddingRight, v.paddingBottom)
-            insets
+        // apply top inset to app bar
+        view.findViewById<View>(R.id.appBar)?.let { appBar ->
+            ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
+                val sb = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+                v.setPadding(v.paddingLeft, sb.top, v.paddingRight, v.paddingBottom)
+                insets
+            }
         }
-
-        // Only handle bottom inset so controls clear the gesture/nav bar
-        val content = view.findViewById<View>(R.id.content)
-        ViewCompat.setOnApplyWindowInsetsListener(content) { v, insets ->
-            val nb = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, nb.bottom)
-            insets
+        // bottom inset for content area (if present in layout)
+        view.findViewById<View>(R.id.content)?.let { content ->
+            ViewCompat.setOnApplyWindowInsetsListener(content) { v, insets ->
+                val nb = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, nb.bottom)
+                insets
+            }
         }
 
         chipGroup = view.findViewById(R.id.chipGroupEmojis)
@@ -67,23 +69,36 @@ class MoodFragment : Fragment() {
 
         buildEmojiChips()
 
+        // Preselect if provided
         arguments?.getString(ARG_PRESELECT_EMOJI)?.let { pre ->
-            if (pre.isNotBlank()) selectEmoji(pre)
+            if (!pre.isNullOrBlank()) selectEmoji(pre)
         }
 
+        // initial state for the button
         btnSave.isEnabled = selectedEmoji() != null
+
         chipGroup.setOnCheckedStateChangeListener { _, _ ->
             btnSave.isEnabled = selectedEmoji() != null
         }
 
         btnSave.setOnClickListener {
-            val selected = selectedEmoji() ?: run {
+            val emoji = selectedEmoji()
+            if (emoji == null) {
                 btnSave.isEnabled = false
                 return@setOnClickListener
             }
             val note = inputNote.text?.toString()?.trim().takeUnless { it.isNullOrEmpty() }
-            MoodStore.add(requireContext(), selected, note)
-            // stay on Mood tab
+
+            // If your MoodStore.add doesn't accept note, use the 2-arg version:
+            // MoodStore.add(requireContext(), emoji)
+            MoodStore.add(requireContext(), emoji, note)
+
+            Toast.makeText(requireContext(), "Saved $emoji", Toast.LENGTH_SHORT).show()
+
+            // reset UI (stay on Mood tab)
+            chipGroup.clearCheck()
+            inputNote.setText("")
+            btnSave.isEnabled = false
         }
     }
 
@@ -95,6 +110,7 @@ class MoodFragment : Fragment() {
                 chipGroup,
                 false
             ) as Chip
+            chip.id = View.generateViewId()        // 🔑 unique ID so ChipGroup can track selection
             chip.text = e
             chip.isCheckable = true
             chip.isChecked = false
@@ -103,10 +119,9 @@ class MoodFragment : Fragment() {
     }
 
     private fun selectedEmoji(): String? {
-        val ids = chipGroup.checkedChipIds
-        if (ids.isEmpty()) return null
-        val chip = chipGroup.findViewById<Chip>(ids.first())
-        return chip?.text?.toString()
+        val id = chipGroup.checkedChipId
+        if (id == View.NO_ID) return null
+        return chipGroup.findViewById<Chip>(id)?.text?.toString()
     }
 
     private fun selectEmoji(emoji: String) {

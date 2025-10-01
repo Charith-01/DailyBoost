@@ -250,21 +250,13 @@
                     android:fontFamily="@font/poppins_semibold"/>
 
                 <TextView
-                    android:id="@+id/btnAddMood"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add mood"
-                    android:textColor="@color/primary"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:layout_marginEnd="14dp"/>
-
-                <TextView
                     android:id="@+id/btnMoodHistory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="See all"
                     android:textColor="@color/primary"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:textSize="14sp"
                     android:fontFamily="@font/poppins_medium"/>
             </LinearLayout>

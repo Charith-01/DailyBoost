@@ -26,25 +26,11 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        // ---- Edge-to-edge: transparent status bar over content (purple header will fill behind) ----
+        // transparent status bar (fragments handle top padding themselves)
         window.statusBarColor = Color.TRANSPARENT
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
 
-        val root = findViewById<View>(R.id.mainRoot)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        val container = findViewById<View>(R.id.nav_host_container)
-
-        // Only handle bottom nav bar inset for the fragment container; top is handled by fragments' own layouts
-        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val nb = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            container.setPadding(
-                container.paddingLeft,
-                container.paddingTop,
-                container.paddingRight,
-                nb.bottom
-            )
-            insets
-        }
 
         currentTabId = savedInstanceState?.getInt("selected_tab") ?: R.id.tab_home
         switchTo(currentTabId, initial = true)
@@ -78,7 +64,6 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
     }
 
-    /** Allow fragments to request tab switches (e.g., Home -> Mood). */
     fun switchToTab(itemId: Int) {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         currentTabId = itemId
@@ -101,9 +86,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         val tx = supportFragmentManager.beginTransaction()
-        // tx.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
         tx.replace(R.id.nav_host_container, fragment, tag)
         supportFragmentManager.popBackStack()
         tx.commitAllowingStateLoss()
     }
 }
+

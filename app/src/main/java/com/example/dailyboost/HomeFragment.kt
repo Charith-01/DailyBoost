@@ -9,19 +9,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -32,8 +33,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.switchmaterial.SwitchMaterial
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -65,13 +65,13 @@ class HomeFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // Status bar styling to match primary app bar (white icons on purple)
+        // Status bar styling matches AppBar
         requireActivity().window.statusBarColor =
             ContextCompat.getColor(requireContext(), R.color.primary)
         WindowCompat.getInsetsController(requireActivity().window, view)
             ?.isAppearanceLightStatusBars = false
 
-        // TOP inset → pad the AppBar so the toolbar (58dp in XML) sits below the cutout/status bar
+        // TOP inset -> pad the AppBar below the cutout/status bar
         val appBar = view.findViewById<View>(R.id.appBar)
         ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
             val sb = insets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -79,21 +79,8 @@ class HomeFragment : Fragment() {
             insets
         }
 
-        // BOTTOM inset → apply only to scroll & FAB so content clears the nav/gesture bar
-        val scroll = view.findViewById<View>(R.id.scroll)
-        ViewCompat.setOnApplyWindowInsetsListener(scroll) { v, insets ->
-            val nb = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, nb.bottom)
-            insets
-        }
-        val fab = view.findViewById<View>(R.id.fabAdd)
-        ViewCompat.setOnApplyWindowInsetsListener(fab) { v, insets ->
-            val nb = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, nb.bottom)
-            insets
-        }
-
         // --- Navigation shortcuts ---
+        val fab = view.findViewById<View>(R.id.fabAdd)
         fab.setOnClickListener {
             startActivity(Intent(requireContext(), AddEditHabitActivity::class.java))
         }
@@ -104,7 +91,7 @@ class HomeFragment : Fragment() {
             startActivity(Intent(requireContext(), HydrationSettingsActivity::class.java))
         }
 
-        // --- Hydration ---
+        // Hydration
         NotificationHelper.createChannel(requireContext())
         switchHydration = view.findViewById(R.id.switchHydration)
         hydrationSub = view.findViewById(R.id.hydrationSub)
@@ -132,27 +119,16 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // --- Quick Mood ---
-        view.findViewById<LinearLayout>(R.id.moodChips)?.let { row ->
-            for (i in 0 until row.childCount) {
-                val tv = row.getChildAt(i) as? TextView ?: continue
-                tv.setOnClickListener {
-                    val face = tv.text?.toString().orEmpty()
-                    MoodStore.add(requireContext(), face)
-                    Toast.makeText(requireContext(), "Mood saved $face", Toast.LENGTH_SHORT).show()
-                    refreshMoodTrend(); renderComposeChart()
-                }
-                tv.setOnLongClickListener {
-                    (activity as? MainActivity)?.switchToTab(R.id.tab_mood)
-                    true
-                }
-            }
-        }
-        view.findViewById<TextView>(R.id.btnAddMood)?.setOnClickListener {
-            (activity as? MainActivity)?.switchToTab(R.id.tab_mood)
+        // -----------------------------
+        // QUICK MOOD: "Add mood" removed as requested
+        // -----------------------------
+
+        // Keep "See all" working → open MoodHistoryActivity
+        view.findViewById<TextView>(R.id.btnMoodHistory)?.setOnClickListener {
+            startActivity(Intent(requireContext(), MoodHistoryActivity::class.java))
         }
 
-        // --- Today’s Habits preview list ---
+        // Habits preview list
         val rvHome = view.findViewById<RecyclerView>(R.id.rvHabitsToday)
         rvHome.layoutManager = LinearLayoutManager(requireContext())
         homeRvAdapter = HomeHabitsAdapter(
@@ -173,6 +149,7 @@ class HomeFragment : Fragment() {
         )
         rvHome.adapter = homeRvAdapter
 
+        // Initial data
         refreshHomeStats()
         refreshHomePreview()
         refreshMoodTrend()
@@ -187,7 +164,7 @@ class HomeFragment : Fragment() {
         refreshMoodTrend()
         renderComposeChart()
 
-        // Keep status bar style consistent on resume
+        // Keep status bar style consistent
         requireActivity().window.statusBarColor =
             ContextCompat.getColor(requireContext(), R.color.primary)
         WindowCompat.getInsetsController(requireActivity().window, view ?: return)
@@ -242,28 +219,34 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /** Renders the 7-day mood chart into the ComposeView. */
     private fun renderComposeChart() {
         val composeView =
             view?.findViewById<androidx.compose.ui.platform.ComposeView>(R.id.moodComposeView)
                 ?: return
+
+        composeView.setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+
+        val data = MoodStore.listAll(requireContext())
         composeView.setContent {
-            Surface(color = Color.Transparent) {
-                MoodBarChart7Day(MoodStore.listAll(requireContext()))
-            }
+            MoodBarChart7Day(data)
         }
     }
 
-    // ---------- Inline Compose bar chart ----------
+    // ---------- Compose chart ----------
     @Composable
     private fun MoodBarChart7Day(data: List<MoodEntry>) {
         val days = 7
         val labels = mutableListOf<String>()
         val scores = FloatArray(days) { 0f }
 
+        // Window & labels (oldest -> newest)
         val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
         val cal = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -6) }
         val keys = IntArray(days)
-        for (i in 0 until days) {
+        repeat(days) { i ->
             keys[i] = cal.get(Calendar.YEAR) * 10000 +
                     (cal.get(Calendar.MONTH) + 1) * 100 +
                     cal.get(Calendar.DAY_OF_MONTH)
@@ -271,33 +254,65 @@ class HomeFragment : Fragment() {
             cal.add(Calendar.DAY_OF_YEAR, 1)
         }
 
+        // Bucket moods to day
         val byDay = HashMap<Int, MutableList<Int>>()
         for (e in data) {
             val c = Calendar.getInstance().apply { timeInMillis = e.timestamp }
             val k = c.get(Calendar.YEAR) * 10000 +
                     (c.get(Calendar.MONTH) + 1) * 100 +
                     c.get(Calendar.DAY_OF_MONTH)
-            if (keys.contains(k)) byDay.getOrPut(k) { mutableListOf() }
-                .add(MoodStore.scoreForEmoji(e.emoji))
+            if (keys.contains(k)) {
+                byDay.getOrPut(k) { mutableListOf() }.add(MoodStore.scoreForEmoji(e.emoji))
+            }
         }
 
-        for (i in 0 until days) {
+        // Average per day (0..5)
+        repeat(days) { i ->
             scores[i] = byDay[keys[i]]?.let { it.sum().toFloat() / it.size } ?: 0f
         }
 
+        val primary = colorResource(id = R.color.primary)
+        val emptyBar = Color(0xFFE9E5F5)
+
         Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Bottom,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 6.dp),
+            verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.Bottom
             ) {
-                // bars...
+                repeat(days) { i ->
+                    val h = (scores[i] / 5f).coerceIn(0f, 1f)
+                    val barHeight = (h * 140f).dp
+                    val barColor = if (h == 0f) emptyBar else primary
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 6.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(barHeight)
+                                .background(barColor)
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            text = labels[i],
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                }
             }
         }
     }
@@ -308,9 +323,13 @@ class HomeFragment : Fragment() {
         private val onToggle: (String, Boolean) -> Unit,
         private val onOpen: (String) -> Unit
     ) : RecyclerView.Adapter<HomeHabitsAdapter.Holder>() {
+
         private val items = mutableListOf<Habit>()
+
         fun submit(list: List<Habit>) {
-            items.clear(); items.addAll(list); notifyDataSetChanged()
+            items.clear()
+            items.addAll(list)
+            notifyDataSetChanged()
         }
 
         inner class Holder(v: View) : RecyclerView.ViewHolder(v) {
@@ -332,13 +351,17 @@ class HomeFragment : Fragment() {
 
         override fun onBindViewHolder(h: Holder, position: Int) {
             val item = items[position]
+
             h.icon.text = emojiFor(item.title)
             h.title.text = item.title
+
             val goal = item.goalPerDay.coerceAtLeast(1)
             val prog = item.progressToday.coerceIn(0, goal)
             h.progressLabel.text = "$prog/$goal today"
+
             h.bar.max = 100
             h.bar.progress = ((prog.toFloat() / goal) * 100).toInt()
+
             if (item.type == HabitType.COUNT) {
                 h.btnPlus.visibility = View.VISIBLE
                 h.chkDone.visibility = View.GONE
@@ -352,6 +375,7 @@ class HomeFragment : Fragment() {
                     onToggle(item.id, checked)
                 }
             }
+
             h.itemView.setOnClickListener { onOpen(item.id) }
         }
 
