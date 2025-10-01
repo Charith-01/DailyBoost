@@ -40,6 +40,7 @@
             android:paddingEnd="24dp">
 
             <!-- Title -->
+
             <TextView
                 android:id="@+id/textTitle"
                 android:layout_width="match_parent"
@@ -98,6 +99,7 @@
                     android:layout_margin="6dp"
                     android:background="@drawable/dot_active" />
             </LinearLayout>
+
         </LinearLayout>
 
         <!-- Button row at bottom -->
@@ -135,4 +137,13 @@
         </LinearLayout>
 
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="380dp"
+        android:layout_height="423dp"
+        app:srcCompat="@drawable/onboard3"
+        tools:layout_editor_absoluteX="15dp"
+        tools:layout_editor_absoluteY="1dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
