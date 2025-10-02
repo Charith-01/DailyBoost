@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.LinearLayout // ✅ added
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -135,8 +136,29 @@ class HomeFragment : Fragment() {
         }
 
         // -----------------------------
-        // QUICK MOOD: "Add mood" removed as requested
+        // QUICK MOOD (✅ re-enabled)
+        // Tap an emoji to save mood; long-press to open Mood tab (details entry)
         // -----------------------------
+        view.findViewById<LinearLayout>(R.id.moodChips)?.let { row ->
+            for (i in 0 until row.childCount) {
+                val tv = row.getChildAt(i) as? TextView ?: continue
+
+                // Quick save on tap
+                tv.setOnClickListener {
+                    val face = tv.text?.toString().orEmpty()
+                    MoodStore.add(requireContext(), face)
+                    Toast.makeText(requireContext(), "Mood saved $face", Toast.LENGTH_SHORT).show()
+                    refreshMoodTrend()
+                    renderComposeChart()
+                }
+
+                // Long press → open Mood tab for full entry
+                tv.setOnLongClickListener {
+                    (activity as? MainActivity)?.switchToTab(R.id.tab_mood)
+                    true
+                }
+            }
+        }
 
         // Keep "See all" working → open MoodHistoryActivity
         view.findViewById<TextView>(R.id.btnMoodHistory)?.setOnClickListener {
