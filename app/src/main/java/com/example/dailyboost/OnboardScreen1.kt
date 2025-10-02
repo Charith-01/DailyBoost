@@ -2,6 +2,7 @@ package com.example.dailyboost
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -28,12 +29,22 @@ class OnboardScreen1 : AppCompatActivity() {
             insets
         }
 
-        // Handle Next button click → open OnboardScreen2
-        val nextBtn = findViewById<android.widget.ImageView>(R.id.btnNext)
+        // Next → OnboardScreen2 (with fade transition)
+        val nextBtn = findViewById<ImageView>(R.id.btnNext)
         nextBtn.setOnClickListener {
             val intent = Intent(this, OnboardScreen2::class.java)
             startActivity(intent)
-            finish() // optional: close OnboardScreen1 so user can’t go back
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            finish() // optional: prevent back to this screen
+        }
+
+        // Skip → SignInScreen (with fade transition)
+        val skipBtn = findViewById<ImageView>(R.id.btnSkip)
+        skipBtn.setOnClickListener {
+            val intent = Intent(this, SignInScreen::class.java)
+            startActivity(intent)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            finish() // close onboarding step 1
         }
     }
 }

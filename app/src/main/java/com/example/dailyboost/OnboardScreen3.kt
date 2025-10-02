@@ -29,17 +29,19 @@ class OnboardScreen3 : AppCompatActivity() {
             insets
         }
 
-        // --- Navigation: Previous button goes back to Screen 2 ---
+        // --- Navigation: Previous button → OnboardScreen2 (with fade) ---
         val btnPrev = findViewById<ImageView>(R.id.btnSkip)
         btnPrev.setOnClickListener {
             startActivity(Intent(this, OnboardScreen2::class.java))
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish()
         }
 
-        // --- Navigation: Get Started button goes to SignInScreen ---
+        // --- Navigation: Get Started → SignInScreen (with fade) ---
         val btnNext = findViewById<ImageView>(R.id.btnNext)
         btnNext.setOnClickListener {
             startActivity(Intent(this, SignInScreen::class.java))
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish()
         }
     }

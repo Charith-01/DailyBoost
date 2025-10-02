@@ -37,12 +37,13 @@ class SignUpScreen : AppCompatActivity() {
         bindViews()
         setupPasswordToggles()
 
-        // Already have account -> go SignIn
+        // "Sign In" link -> no animation (per your request)
         findViewById<TextView>(R.id.txtSignIn).setOnClickListener {
             startActivity(Intent(this, SignInScreen::class.java))
             finish()
         }
 
+        // Sign Up button -> will use fade animation after successful registration
         btnSignUp.setOnClickListener { doRegister() }
     }
 
@@ -110,17 +111,18 @@ class SignUpScreen : AppCompatActivity() {
         val hash = AuthPrefs.sha256(pass)
         val user = User(fullName = name, email = email, passwordHash = hash)
 
-        AuthPrefs.register(this, user) // adds or updates, sets active + logged-in
+        AuthPrefs.register(this, user) // adds/updates, sets active + logged-in
 
-        // UX feedback depending on whether we updated or created
+        // UX feedback
         if (existing == null) {
             Toast.makeText(this, getString(R.string.signup_success), Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this, "Account updated", Toast.LENGTH_SHORT).show()
         }
 
-        // Continue to Sign In (or you can go straight to MainActivity if preferred)
+        // Continue to Sign In WITH fade animation (only for Sign Up path)
         startActivity(Intent(this, SignInScreen::class.java))
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
     }
 }

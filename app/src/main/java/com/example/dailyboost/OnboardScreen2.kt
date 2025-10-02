@@ -30,17 +30,21 @@ class OnboardScreen2 : AppCompatActivity() {
         }
 
         // --- Navigation ---
-        val btnPrev = findViewById<ImageView>(R.id.btnSkip)   // your "previous" image (prebtn)
-        val btnNext = findViewById<ImageView>(R.id.btnNext)   // your "next" image (nextbtn)
+        val btnPrev = findViewById<ImageView>(R.id.btnSkip)   // your "previous" image
+        val btnNext = findViewById<ImageView>(R.id.btnNext)   // your "next" image
 
+        // Prev → OnboardScreen1 (with fade)
         btnPrev.setOnClickListener {
             startActivity(Intent(this, OnboardScreen1::class.java))
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish() // optional: remove screen2 from back stack
         }
 
+        // Next → OnboardScreen3 (with fade)
         btnNext.setOnClickListener {
             startActivity(Intent(this, OnboardScreen3::class.java))
-            // don't finish() if you want back press to return to screen2
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            // don't finish() if you want the back button to return to screen2
         }
     }
 }

@@ -62,6 +62,7 @@ class SignInScreen : AppCompatActivity() {
     }
 
     private fun setupClicks() {
+        // "Sign Up" link -> NO animation (per your request)
         txtSignUp.setOnClickListener {
             startActivity(Intent(this, SignUpScreen::class.java))
             finish()
@@ -71,9 +72,7 @@ class SignInScreen : AppCompatActivity() {
             Toast.makeText(this, "Feature not available in exam scope.", Toast.LENGTH_SHORT).show()
         }
 
-        btnSignIn.setOnClickListener {
-            doLogin()
-        }
+        btnSignIn.setOnClickListener { doLogin() }
     }
 
     private fun prefillEmailIfAvailable() {
@@ -116,7 +115,9 @@ class SignInScreen : AppCompatActivity() {
 
         Toast.makeText(this, "Welcome back, ${user.fullName}!", Toast.LENGTH_SHORT).show()
 
+        // Go to MainActivity WITH fade animation (only for Sign In path)
         startActivity(Intent(this, MainActivity::class.java))
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
     }
 }

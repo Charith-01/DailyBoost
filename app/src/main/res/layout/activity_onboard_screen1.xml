@@ -132,6 +132,7 @@
         android:layout_height="460dp"
         app:srcCompat="@drawable/onboard1"
         tools:layout_editor_absoluteX="-2dp"
-        tools:layout_editor_absoluteY="-29dp" />
+        tools:layout_editor_absoluteY="-29dp"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
