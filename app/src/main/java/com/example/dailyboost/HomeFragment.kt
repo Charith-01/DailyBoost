@@ -1,7 +1,6 @@
 package com.example.dailyboost
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -41,6 +40,7 @@ import java.util.Locale
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import android.content.Intent
 
 class HomeFragment : Fragment() {
 
@@ -61,7 +61,6 @@ class HomeFragment : Fragment() {
     private var currentStreamName: String? = null
 
     // ▶️ Local RAW streams (order used for prev/next)
-    // Place files in: app/src/main/res/raw/  -> lofi.mp3, nature.mp3, rain.mp3, piano.mp3
     private val streams = linkedMapOf(
         "Lo-Fi" to R.raw.lofi,
         "Nature" to R.raw.nature,
@@ -78,7 +77,6 @@ class HomeFragment : Fragment() {
             HydrationScheduler.enable(ctx, HydrationPrefs.intervalMinutes(ctx))
             updateHydrationRow()
             Toast.makeText(ctx, "Hydration reminders enabled", Toast.LENGTH_SHORT).show()
-            HydrationTest.scheduleTestReminder(ctx, 30)
         } else {
             switchHydration?.isChecked = false
             Toast.makeText(ctx, "Notification permission denied", Toast.LENGTH_SHORT).show()
@@ -123,14 +121,12 @@ class HomeFragment : Fragment() {
             insets
         }
 
-        // (FAB removed — no fabAdd code)
-
         view.findViewById<TextView>(R.id.btnSeeAllHabits)?.setOnClickListener {
             (activity as? MainActivity)?.switchToTab(R.id.tab_habits)
         }
-        view.findViewById<View>(R.id.cardHydration).setOnClickListener {
-            startActivity(Intent(requireContext(), HydrationSettingsActivity::class.java))
-        }
+
+        // ⛔️ Removed: navigation on hydration card tap
+        // (No click listener on R.id.cardHydration now)
 
         // Hydration
         NotificationHelper.createChannel(requireContext())
@@ -151,7 +147,6 @@ class HomeFragment : Fragment() {
                     HydrationScheduler.enable(ctx, HydrationPrefs.intervalMinutes(ctx))
                     updateHydrationRow()
                     Toast.makeText(ctx, "Hydration reminders enabled", Toast.LENGTH_SHORT).show()
-                    HydrationTest.scheduleTestReminder(ctx, 30)
                 }
             } else {
                 HydrationScheduler.disable(ctx)
@@ -160,14 +155,11 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // -----------------------------
-        // QUICK MOOD
-        // -----------------------------
+        // ----------------------------- QUICK MOOD -----------------------------
         view.findViewById<LinearLayout>(R.id.moodChips)?.let { row ->
             for (i in 0 until row.childCount) {
                 val tv = row.getChildAt(i) as? TextView ?: continue
 
-                // Quick save on tap
                 tv.setOnClickListener {
                     val face = tv.text?.toString().orEmpty()
                     MoodStore.add(requireContext(), face)
@@ -176,7 +168,6 @@ class HomeFragment : Fragment() {
                     renderComposeChart()
                 }
 
-                // Long press → open Mood tab
                 tv.setOnLongClickListener {
                     (activity as? MainActivity)?.switchToTab(R.id.tab_mood)
                     true
@@ -184,7 +175,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // Mood history
         view.findViewById<TextView>(R.id.btnMoodHistory)?.setOnClickListener {
             startActivity(Intent(requireContext(), MoodHistoryActivity::class.java))
         }
@@ -216,9 +206,7 @@ class HomeFragment : Fragment() {
         refreshMoodTrend()
         renderComposeChart()
 
-        // -----------------------------
-        // 🎵 Stress-release Music (local)
-        // -----------------------------
+        // ----------------------------- 🎵 MUSIC -----------------------------
         musicNow = view.findViewById(R.id.txtMusicNow)
         musicToggle = view.findViewById(R.id.btnOpenPlayer)
         pulse = view.findViewById(R.id.progressPulse)
@@ -230,13 +218,11 @@ class HomeFragment : Fragment() {
 
         view.findViewById<View>(R.id.cardMusic)?.setOnClickListener { togglePlayPause() }
 
-        // Emoji chips → start tracks
         view.findViewById<TextView>(R.id.chipLoFi)?.setOnClickListener { startStream("Lo-Fi") }
         view.findViewById<TextView>(R.id.chipNature)?.setOnClickListener { startStream("Nature") }
         view.findViewById<TextView>(R.id.chipRain)?.setOnClickListener { startStream("Rain") }
         view.findViewById<TextView>(R.id.chipPiano)?.setOnClickListener { startStream("Piano") }
 
-        // Transport controls
         musicToggle?.setOnClickListener { togglePlayPause() }
         btnIconPlay?.setOnClickListener { togglePlayPause() }
         btnPrev?.setOnClickListener { prevStream() }
@@ -597,7 +583,6 @@ class HomeFragment : Fragment() {
         pulse?.visibility = if (p?.isPlaying == true) View.VISIBLE else View.GONE
     }
 
-    // Highlight the selected chip
     private fun setSelectedChip(name: String?) {
         val chips = listOf(
             view?.findViewById<TextView>(R.id.chipLoFi) to "Lo-Fi",

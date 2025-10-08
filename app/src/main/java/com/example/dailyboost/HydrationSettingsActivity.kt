@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.DateFormat
-import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -73,6 +73,12 @@ class HydrationSettingsActivity : AppCompatActivity() {
         txtSummaryGoal = findViewById(R.id.txtSummaryGoal)
         txtSummaryDrink = findViewById(R.id.txtSummaryDrink)
 
+        // ⏱ Test reminder button (clock on reminder card header)
+        findViewById<ImageView>(R.id.imgClockDecor)?.setOnClickListener {
+            // Schedule a quick test notification (30 seconds from now)
+            HydrationTest.scheduleTestReminder(this, 1)
+        }
+
         // --- Load saved data ---
         minutes = min(max(1, data.reminderInterval), 24 * 60)
         goal = data.goal
@@ -117,16 +123,11 @@ class HydrationSettingsActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
-        inputMinutes.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) inputMinutes.clearFocus()
-            false
-        }
 
-        // --- Buttons ---
+        // Buttons
         btnCancel.setOnClickListener { finish() }
         btnSave.setOnClickListener {
             if (isValid(minutes)) {
-                // Save values
                 val g = inputGoal.text.toString().toIntOrNull()?.coerceIn(500, 6000) ?: 2500
                 val d = inputDrinkAmount.text.toString().toIntOrNull()?.coerceIn(50, 1000) ?: 300
 
@@ -137,7 +138,6 @@ class HydrationSettingsActivity : AppCompatActivity() {
                 if (HydrationPrefs.isEnabled(this)) {
                     HydrationScheduler.updateInterval(this, minutes)
                 }
-
                 finish()
             } else {
                 setInvalid("Minutes must be 1–1440")
