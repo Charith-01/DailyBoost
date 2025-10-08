@@ -4,6 +4,9 @@
     <!-- Hydration: notifications (Tiramisu/33+) and reboot handling -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Internet is required for streaming audio -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
     <application
         android:allowBackup="true"

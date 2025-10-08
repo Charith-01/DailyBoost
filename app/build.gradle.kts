@@ -73,4 +73,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation("androidx.fragment:fragment-ktx:1.8.2")
+
+    implementation ("androidx.media3:media3-exoplayer:1.4.1")
+    implementation ("androidx.media3:media3-ui:1.4.1")
+    implementation ("androidx.media3:media3-datasource-okhttp:1.4.1")// (UI not strictly required, but handy)
+
 }

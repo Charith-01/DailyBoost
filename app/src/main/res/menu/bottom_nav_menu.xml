@@ -2,25 +2,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/tab_home"
-        android:icon="@drawable/homeicon"
+        android:icon="@drawable/home"
         android:fontFamily="@font/poppins_semibold"
         android:title="Home" />
 
     <item
         android:id="@+id/tab_habits"
-        android:icon="@drawable/habiticon"
+        android:icon="@drawable/calendarcheck"
         android:fontFamily="@font/poppins_semibold"
         android:title="Habits" />
 
     <item
         android:id="@+id/tab_mood"
-        android:icon="@drawable/moodicon"
+        android:icon="@drawable/mood"
         android:fontFamily="@font/poppins_semibold"
         android:title="Mood" />
 
     <item
         android:id="@+id/tab_profile"
-        android:icon="@drawable/profileicon"
+        android:icon="@drawable/user"
         android:fontFamily="@font/poppins_semibold"
         android:title="Profile" />
 </menu>

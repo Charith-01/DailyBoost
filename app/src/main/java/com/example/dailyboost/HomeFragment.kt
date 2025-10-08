@@ -9,11 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.LinearLayout // ✅ added
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
@@ -34,13 +36,39 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.switchmaterial.SwitchMaterial
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 
 class HomeFragment : Fragment() {
 
     private lateinit var homeRvAdapter: HomeHabitsAdapter
     private var switchHydration: SwitchMaterial? = null
     private var hydrationSub: TextView? = null
+
+    // ▶️ Music UI references
+    private var musicNow: TextView? = null
+    private var musicToggle: TextView? = null
+    private var pulse: LinearProgressIndicator? = null
+    private var btnPrev: TextView? = null
+    private var btnIconPlay: TextView? = null
+    private var btnNext: TextView? = null
+
+    // ▶️ ExoPlayer instance
+    private var player: ExoPlayer? = null
+    private var currentStreamName: String? = null
+
+    // ▶️ Local RAW streams (order used for prev/next)
+    // Place files in: app/src/main/res/raw/  -> lofi.mp3, nature.mp3, rain.mp3, piano.mp3
+    private val streams = linkedMapOf(
+        "Lo-Fi" to R.raw.lofi,
+        "Nature" to R.raw.nature,
+        "Rain" to R.raw.rain,
+        "Piano" to R.raw.piano
+    )
+    private val streamKeys by lazy { streams.keys.toList() }
 
     private val requestNotifPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -68,13 +96,13 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Status bar styling matches AppBar
+        // Status bar styling
         requireActivity().window.statusBarColor =
             ContextCompat.getColor(requireContext(), R.color.primary)
         WindowCompat.getInsetsController(requireActivity().window, view)
             ?.isAppearanceLightStatusBars = false
 
-        // Dynamic greeting with user name + time of day
+        // Dynamic greeting
         val greetingView = view.findViewById<TextView>(R.id.greeting)
         val user = AuthPrefs.getUser(requireContext())
         val name = user?.fullName?.trim().takeUnless { it.isNullOrEmpty() } ?: "User"
@@ -87,7 +115,7 @@ class HomeFragment : Fragment() {
         }
         greetingView.text = "$greetingWord, $name 👋"
 
-        // TOP inset -> pad the AppBar below the cutout/status bar
+        // Handle top inset
         val appBar = view.findViewById<View>(R.id.appBar)
         ViewCompat.setOnApplyWindowInsetsListener(appBar) { v, insets ->
             val sb = insets.getInsets(WindowInsetsCompat.Type.statusBars())
@@ -95,11 +123,8 @@ class HomeFragment : Fragment() {
             insets
         }
 
-        // --- Navigation shortcuts ---
-        val fab = view.findViewById<View>(R.id.fabAdd)
-        fab.setOnClickListener {
-            startActivity(Intent(requireContext(), AddEditHabitActivity::class.java))
-        }
+        // (FAB removed — no fabAdd code)
+
         view.findViewById<TextView>(R.id.btnSeeAllHabits)?.setOnClickListener {
             (activity as? MainActivity)?.switchToTab(R.id.tab_habits)
         }
@@ -136,8 +161,7 @@ class HomeFragment : Fragment() {
         }
 
         // -----------------------------
-        // QUICK MOOD (✅ re-enabled)
-        // Tap an emoji to save mood; long-press to open Mood tab (details entry)
+        // QUICK MOOD
         // -----------------------------
         view.findViewById<LinearLayout>(R.id.moodChips)?.let { row ->
             for (i in 0 until row.childCount) {
@@ -152,7 +176,7 @@ class HomeFragment : Fragment() {
                     renderComposeChart()
                 }
 
-                // Long press → open Mood tab for full entry
+                // Long press → open Mood tab
                 tv.setOnLongClickListener {
                     (activity as? MainActivity)?.switchToTab(R.id.tab_mood)
                     true
@@ -160,7 +184,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // Keep "See all" working → open MoodHistoryActivity
+        // Mood history
         view.findViewById<TextView>(R.id.btnMoodHistory)?.setOnClickListener {
             startActivity(Intent(requireContext(), MoodHistoryActivity::class.java))
         }
@@ -191,6 +215,32 @@ class HomeFragment : Fragment() {
         refreshHomePreview()
         refreshMoodTrend()
         renderComposeChart()
+
+        // -----------------------------
+        // 🎵 Stress-release Music (local)
+        // -----------------------------
+        musicNow = view.findViewById(R.id.txtMusicNow)
+        musicToggle = view.findViewById(R.id.btnOpenPlayer)
+        pulse = view.findViewById(R.id.progressPulse)
+        btnPrev = view.findViewById(R.id.btnPrev)
+        btnIconPlay = view.findViewById(R.id.btnIconPlay)
+        btnNext = view.findViewById(R.id.btnNext)
+
+        initPlayer()
+
+        view.findViewById<View>(R.id.cardMusic)?.setOnClickListener { togglePlayPause() }
+
+        // Emoji chips → start tracks
+        view.findViewById<TextView>(R.id.chipLoFi)?.setOnClickListener { startStream("Lo-Fi") }
+        view.findViewById<TextView>(R.id.chipNature)?.setOnClickListener { startStream("Nature") }
+        view.findViewById<TextView>(R.id.chipRain)?.setOnClickListener { startStream("Rain") }
+        view.findViewById<TextView>(R.id.chipPiano)?.setOnClickListener { startStream("Piano") }
+
+        // Transport controls
+        musicToggle?.setOnClickListener { togglePlayPause() }
+        btnIconPlay?.setOnClickListener { togglePlayPause() }
+        btnPrev?.setOnClickListener { prevStream() }
+        btnNext?.setOnClickListener { nextStream() }
     }
 
     override fun onResume() {
@@ -201,13 +251,11 @@ class HomeFragment : Fragment() {
         refreshMoodTrend()
         renderComposeChart()
 
-        // Keep status bar style consistent
         requireActivity().window.statusBarColor =
             ContextCompat.getColor(requireContext(), R.color.primary)
         WindowCompat.getInsetsController(requireActivity().window, view ?: return)
             ?.isAppearanceLightStatusBars = false
 
-        // Refresh greeting if user changed their name elsewhere
         view?.findViewById<TextView>(R.id.greeting)?.let { tv ->
             val user = AuthPrefs.getUser(requireContext())
             val name = user?.fullName?.trim().takeUnless { it.isNullOrEmpty() } ?: "User"
@@ -221,6 +269,26 @@ class HomeFragment : Fragment() {
             tv.text = "$greetingWord, $name 👋"
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        player?.playWhenReady = false
+        updateMusicToggleLabel()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        player?.release()
+        player = null
+        musicNow = null
+        musicToggle = null
+        pulse = null
+        btnPrev = null
+        btnIconPlay = null
+        btnNext = null
+    }
+
+    // ----------------- Home stats / hydration / mood -----------------
 
     private fun updateHydrationRow() {
         val ctx = requireContext()
@@ -265,7 +333,7 @@ class HomeFragment : Fragment() {
             "📊 Weekly Mood Trend • No data yet"
         } else {
             val face = MoodStore.emojiForScore(avg)
-            val label = String.format("%.1f", avg)
+            val label = String.format(Locale.getDefault(), "%.1f", avg)
             "📊 Weekly Mood Trend • $face  $label / 5"
         }
     }
@@ -281,19 +349,16 @@ class HomeFragment : Fragment() {
         )
 
         val data = MoodStore.listAll(requireContext())
-        composeView.setContent {
-            MoodBarChart7Day(data)
-        }
+        composeView.setContent { MoodBarChart7Day(data) }
     }
 
-    // ---------- Compose chart ----------
+    // ---------- Compose chart (LINE chart) ----------
     @Composable
     private fun MoodBarChart7Day(data: List<MoodEntry>) {
         val days = 7
         val labels = mutableListOf<String>()
         val scores = FloatArray(days) { 0f }
 
-        // Window & labels (oldest -> newest)
         val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
         val cal = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -6) }
         val keys = IntArray(days)
@@ -305,7 +370,6 @@ class HomeFragment : Fragment() {
             cal.add(Calendar.DAY_OF_YEAR, 1)
         }
 
-        // Bucket moods to day
         val byDay = HashMap<Int, MutableList<Int>>()
         for (e in data) {
             val c = Calendar.getInstance().apply { timeInMillis = e.timestamp }
@@ -317,13 +381,12 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // Average per day (0..5)
         repeat(days) { i ->
             scores[i] = byDay[keys[i]]?.let { it.sum().toFloat() / it.size } ?: 0f
         }
 
         val primary = colorResource(id = R.color.primary)
-        val emptyBar = Color(0xFFE9E5F5)
+        val gridColor = Color(0xFFE9E5F5)
 
         Column(
             modifier = Modifier
@@ -332,37 +395,63 @@ class HomeFragment : Fragment() {
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
+            // Chart area
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.Bottom
+                    .height(160.dp)
             ) {
-                repeat(days) { i ->
-                    val h = (scores[i] / 5f).coerceIn(0f, 1f)
-                    val barHeight = (h * 140f).dp
-                    val barColor = if (h == 0f) emptyBar else primary
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val w = size.width
+                    val h = size.height
 
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 6.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Bottom
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(barHeight)
-                                .background(barColor)
-                        )
-                        Spacer(Modifier.height(6.dp))
-                        Text(
-                            text = labels[i],
-                            style = MaterialTheme.typography.labelSmall
+                    // Grid lines
+                    val levels = floatArrayOf(0f, 2.5f, 5f)
+                    levels.forEach { lvl ->
+                        val y = h - (lvl / 5f) * h
+                        drawLine(
+                            color = gridColor,
+                            start = androidx.compose.ui.geometry.Offset(0f, y),
+                            end = androidx.compose.ui.geometry.Offset(w, y),
+                            strokeWidth = 2f
                         )
                     }
+
+                    val step = if (days > 1) w / (days - 1) else 0f
+
+                    // Line path
+                    val path = Path()
+                    for (i in 0 until days) {
+                        val x = step * i
+                        val y = h - (scores[i] / 5f).coerceIn(0f, 1f) * h
+                        if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+                    }
+
+                    drawPath(path = path, color = primary, style = Stroke(width = 6f))
+
+                    // Points
+                    for (i in 0 until days) {
+                        val x = step * i
+                        val y = h - (scores[i] / 5f).coerceIn(0f, 1f) * h
+                        drawCircle(
+                            color = primary,
+                            radius = 8f,
+                            center = androidx.compose.ui.geometry.Offset(x, y)
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(6.dp))
+
+            // X-axis labels
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                repeat(days) { i ->
+                    Text(text = labels[i], style = MaterialTheme.typography.labelSmall)
                 }
             }
         }
@@ -435,8 +524,95 @@ class HomeFragment : Fragment() {
             title.contains("gym", true) -> "🏋️"
             title.contains("read", true) -> "📚"
             title.contains("walk", true) -> "🚶"
-            title.contains("meditat", true) -> "🧘"
+            title.contains("meditation", true) -> "🧘"
             else -> "✅"
+        }
+    }
+
+    // -------------------- MUSIC (ExoPlayer) helpers --------------------
+    private fun initPlayer() {
+        if (player != null) return
+        player = ExoPlayer.Builder(requireContext()).build().also { p ->
+            p.addListener(object : Player.Listener {
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    updateMusicToggleLabel()
+                }
+            })
+        }
+        updateMusicToggleLabel()
+        musicNow?.text = "Pick a sound to start"
+        setSelectedChip(null)
+    }
+
+    private fun startStream(name: String) {
+        val resId = streams[name] ?: return
+        val uri = "android.resource://${requireContext().packageName}/$resId"
+
+        val p = player ?: run { initPlayer(); player!! }
+        val mediaItem = MediaItem.fromUri(uri)
+        p.setMediaItem(mediaItem)
+        p.prepare()
+        p.playWhenReady = true
+
+        currentStreamName = name
+        musicNow?.text = "Now playing • $name"
+        setSelectedChip(name)
+        updateMusicToggleLabel()
+        Toast.makeText(requireContext(), "Playing $name", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun togglePlayPause() {
+        val p = player ?: run { initPlayer(); player!! }
+        if (p.mediaItemCount == 0) {
+            startStream("Lo-Fi")
+            return
+        }
+        p.playWhenReady = !p.isPlaying
+        updateMusicToggleLabel()
+    }
+
+    private fun prevStream() {
+        if (streamKeys.isEmpty()) return
+        val idx = currentStreamName?.let { streamKeys.indexOf(it) } ?: 0
+        val prev = if (idx <= 0) streamKeys.last() else streamKeys[idx - 1]
+        startStream(prev)
+    }
+
+    private fun nextStream() {
+        if (streamKeys.isEmpty()) return
+        val idx = currentStreamName?.let { streamKeys.indexOf(it) } ?: -1
+        val next = if (idx >= streamKeys.lastIndex) streamKeys.first() else streamKeys[idx + 1]
+        startStream(next)
+    }
+
+    private fun updateMusicToggleLabel() {
+        val p = player
+        val label = when {
+            p == null || p.mediaItemCount == 0 -> "Play"
+            p.isPlaying -> "Pause"
+            else -> "Play"
+        }
+        musicToggle?.text = label
+        btnIconPlay?.text = if (label == "Pause") "⏸" else "▶"
+        pulse?.visibility = if (p?.isPlaying == true) View.VISIBLE else View.GONE
+    }
+
+    // Highlight the selected chip
+    private fun setSelectedChip(name: String?) {
+        val chips = listOf(
+            view?.findViewById<TextView>(R.id.chipLoFi) to "Lo-Fi",
+            view?.findViewById<TextView>(R.id.chipNature) to "Nature",
+            view?.findViewById<TextView>(R.id.chipRain) to "Rain",
+            view?.findViewById<TextView>(R.id.chipPiano) to "Piano"
+        )
+        chips.forEach { (chip, label) ->
+            chip ?: return@forEach
+            if (label == name) {
+                chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.secondary))
+            } else {
+                chip.setBackgroundResource(R.drawable.bg_mood_chip)
+                chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            }
         }
     }
 }
