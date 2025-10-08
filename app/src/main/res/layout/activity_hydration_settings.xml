@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/secondary">
 
-    <!-- Top App Bar (no back button) -->
+    <!-- Top App Bar -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="0dp"
@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="140dp"
             android:background="@drawable/bg_gradient_toolbar"
-            app:title="Hydration Reminder"
+            app:title="Hydration Settings"
             app:titleCentered="true"
             app:titleTextColor="@android:color/white"
             app:titleTextAppearance="@style/ToolbarTitleText"
@@ -29,7 +29,6 @@
             android:paddingStart="20dp"
             android:paddingEnd="20dp"/>
 
-        <!-- Decorative wave (optional, keep if drawable exists) -->
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="20dp"
@@ -38,7 +37,7 @@
             android:scaleType="fitXY"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Content -->
+    <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll"
         android:layout_width="0dp"
@@ -58,7 +57,7 @@
             android:orientation="vertical"
             android:paddingBottom="32dp">
 
-            <!-- Fine-tune -->
+            <!-- === Goal and Drink Settings === -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,8 +66,7 @@
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/secondary"
                 app:strokeColor="@color/accent"
-                app:strokeWidth="2dp"
-                android:foreground="?android:attr/selectableItemBackground">
+                app:strokeWidth="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -79,13 +77,93 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Fine-tune"
+                        android:text="Hydration Targets"
                         android:textColor="@color/black"
                         android:textSize="18sp"
-                        android:textStyle="bold"
                         android:fontFamily="@font/poppins_semibold"
-                        android:drawablePadding="8dp"
-                        android:drawableStart="@drawable/ic_tune"/>
+                        android:drawableStart="@drawable/ic_water_drop"
+                        android:drawablePadding="8dp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="Daily Goal (mL)"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxStrokeColor="@color/primary"
+                        app:boxBackgroundColor="@color/accent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/inputGoal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="14dp"
+                            android:paddingBottom="14dp"
+                            android:paddingEnd="16dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="Each Drink (mL)"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxCornerRadiusTopStart="16dp"
+                        app:boxCornerRadiusTopEnd="16dp"
+                        app:boxCornerRadiusBottomEnd="16dp"
+                        app:boxCornerRadiusBottomStart="16dp"
+                        app:boxStrokeColor="@color/primary"
+                        app:boxBackgroundColor="@color/accent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/inputDrinkAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="14dp"
+                            android:paddingBottom="14dp"
+                            android:paddingEnd="16dp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- === Reminder Interval === -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/secondary"
+                app:strokeColor="@color/accent"
+                app:strokeWidth="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reminder Interval"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:drawableStart="@drawable/ic_timer"
+                        android:drawablePadding="8dp"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/inputLayoutMinutes"
@@ -99,10 +177,9 @@
                         app:boxCornerRadiusTopEnd="16dp"
                         app:boxCornerRadiusTopStart="16dp"
                         app:boxStrokeColor="@color/primary"
-                        app:hintTextColor="@color/gray"
+                        app:boxBackgroundColor="@color/accent"
                         app:startIconDrawable="@drawable/ic_timer"
-                        app:startIconTint="@color/primary"
-                        app:boxBackgroundColor="@color/accent">
+                        app:startIconTint="@color/primary">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/inputMinutes"
@@ -138,17 +215,16 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Summary -->
+            <!-- === Summary Card === -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/secondary"
                 app:strokeColor="@color/accent"
-                app:strokeWidth="2dp"
-                android:foreground="?android:attr/selectableItemBackground">
+                app:strokeWidth="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -162,52 +238,53 @@
                         android:text="Summary"
                         android:textColor="@color/black"
                         android:textSize="18sp"
-                        android:textStyle="bold"
                         android:fontFamily="@font/poppins_semibold"
-                        android:drawablePadding="8dp"
-                        android:drawableStart="@drawable/ic_summary"/>
+                        android:drawableStart="@drawable/ic_summary"
+                        android:drawablePadding="8dp"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/txtSummaryGoal"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:text="Goal: 2500 mL"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:layout_marginTop="12dp"/>
 
-                        <TextView
-                            android:id="@+id/pillEvery"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_pill_modern"
-                            android:paddingLeft="16dp"
-                            android:paddingRight="16dp"
-                            android:paddingTop="10dp"
-                            android:paddingBottom="10dp"
-                            android:text="Every 2 hours"
-                            android:textColor="@color/primary"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            android:fontFamily="@font/poppins_semibold"
-                            android:drawableStart="@drawable/ic_water_drop"
-                            android:drawablePadding="6dp"/>
+                    <TextView
+                        android:id="@+id/txtSummaryDrink"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Each Drink: 300 mL"
+                        android:textColor="@color/primary"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:layout_marginTop="6dp"/>
 
-                        <TextView
-                            android:id="@+id/summaryNextAt"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_weight="1"
-                            android:text="Next at 12:22 PM"
-                            android:textColor="@color/gray"
-                            android:textSize="14sp"
-                            android:fontFamily="@font/poppins_medium"
-                            android:drawableStart="@drawable/ic_clock"
-                            android:drawablePadding="6dp"/>
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/pillEvery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Every 2 hours"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/primary_dark"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_semibold"/>
+
+                    <TextView
+                        android:id="@+id/summaryNextAt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Next at 12:22 PM"
+                        android:textColor="@color/gray"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:layout_marginTop="6dp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Actions -->
+            <!-- === Actions === -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -250,7 +327,6 @@
                     android:drawablePadding="8dp"
                     app:elevation="4dp"/>
             </LinearLayout>
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

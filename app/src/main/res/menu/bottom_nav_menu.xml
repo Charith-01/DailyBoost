@@ -3,24 +3,30 @@
     <item
         android:id="@+id/tab_home"
         android:icon="@drawable/home"
-        android:fontFamily="@font/poppins_semibold"
-        android:title="Home" />
+        android:title="Home"
+        android:fontFamily="@font/poppins_semibold" />
 
     <item
         android:id="@+id/tab_habits"
         android:icon="@drawable/calendarcheck"
-        android:fontFamily="@font/poppins_semibold"
-        android:title="Habits" />
+        android:title="Habits"
+        android:fontFamily="@font/poppins_semibold" />
+
+    <item
+        android:id="@+id/tab_hydration"
+        android:icon="@drawable/ic_water_drop"
+        android:title="Hydration"
+        android:fontFamily="@font/poppins_semibold" />
 
     <item
         android:id="@+id/tab_mood"
         android:icon="@drawable/mood"
-        android:fontFamily="@font/poppins_semibold"
-        android:title="Mood" />
+        android:title="Mood"
+        android:fontFamily="@font/poppins_semibold" />
 
     <item
         android:id="@+id/tab_profile"
         android:icon="@drawable/user"
-        android:fontFamily="@font/poppins_semibold"
-        android:title="Profile" />
+        android:title="Profile"
+        android:fontFamily="@font/poppins_semibold" />
 </menu>

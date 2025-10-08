@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ArcGaugeView">
+        <attr name="agv_startAngle" format="float" />
+        <attr name="agv_sweepAngle" format="float" />
+        <attr name="agv_trackThickness" format="dimension" />
+        <attr name="agv_trackColor" format="color" />
+        <attr name="agv_progressColor" format="color" />
+        <attr name="agv_tickCount" format="integer" />
+        <attr name="agv_tickLength" format="dimension" />
+        <attr name="agv_tickColor" format="color" />
+    </declare-styleable>
+</resources>

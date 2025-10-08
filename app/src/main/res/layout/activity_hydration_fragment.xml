@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/secondary">
+
+    <!-- ===== App Bar ===== -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:fitsSystemWindows="true"
+        app:elevation="4dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@android:color/transparent"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:title="Hydration Tracker"
+            app:titleCentered="true"
+            app:titleTextColor="@color/secondary"
+            app:titleTextAppearance="@style/ToolbarTitleStyle" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- ===== Main Content ===== -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mainContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- ====== Modern Gauge Card ====== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardGauge"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@android:color/white"
+                android:padding="24dp">
+
+                <!-- Centered Header -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:id="@+id/txtHeaderGoal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Today's Goal"
+                        android:textSize="16sp"
+                        android:textColor="@color/primary"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:layout_centerInParent="true" />
+                </RelativeLayout>
+
+                <!-- Gauge Container -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="280dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+
+                    <com.example.dailyboost.ArcGaugeView
+                        android:id="@+id/gauge"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:agv_startAngle="140"
+                        app:agv_sweepAngle="260"
+                        app:agv_trackThickness="20dp"
+                        app:agv_trackColor="#E5E7EB"
+                        app:agv_progressColor="@color/primary"
+                        app:agv_tickCount="20"
+                        app:agv_tickLength="8dp"
+                        app:agv_tickColor="#D1D5DB" />
+
+                    <!-- Center Content -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <!-- Amount Display -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginTop="8dp">
+
+                            <TextView
+                                android:id="@+id/txtAmount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textSize="52sp"
+                                android:textColor="#111827"
+                                android:fontFamily="@font/poppins_bold"
+                                android:letterSpacing="-0.02" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="mL"
+                                android:textSize="20sp"
+                                android:textColor="#6B7280"
+                                android:fontFamily="@font/poppins_medium"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_gravity="bottom" />
+                        </LinearLayout>
+
+                        <!-- Goal Text -->
+                        <TextView
+                            android:id="@+id/txtGoal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="/2500 mL"
+                            android:textSize="16sp"
+                            android:textColor="#9CA3AF"
+                            android:fontFamily="@font/poppins_medium"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+                </FrameLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ====== Modern Action Button ====== -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardAction"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp"
+            android:backgroundTint="@color/primary"
+            app:layout_constraintTop_toBottomOf="@id/cardGauge"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <Button
+                android:id="@+id/btnDrink"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="💧 Add Water (300 mL)"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:background="@android:color/transparent"
+                android:fontFamily="@font/poppins_semibold"
+                android:letterSpacing="0.01"
+                android:stateListAnimator="@null"
+                android:elevation="0dp" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ===== Settings FAB (bottom-right) ===== -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="Adjust hydration settings"
+        app:srcCompat="@drawable/settings"
+        app:tint="@android:color/white"
+        app:backgroundTint="@color/primary"
+        app:layout_anchor="@id/mainContent"
+        app:layout_anchorGravity="bottom|end"
+        android:layout_margin="24dp"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

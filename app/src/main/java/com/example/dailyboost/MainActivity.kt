@@ -2,12 +2,9 @@ package com.example.dailyboost
 
 import android.graphics.Color
 import android.os.Bundle
-import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -16,6 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     private val homeFragment: Fragment by lazy { HomeFragment() }
     private val habitsFragment: Fragment by lazy { HabitsFragment() }
+    private val hydrationFragment: Fragment by lazy { HydrationFragment() }
     private val moodFragment: Fragment by lazy { MoodFragment() }
     private val profileFragment: Fragment by lazy { ProfileFragment() }
 
@@ -26,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        // transparent status bar (fragments handle top padding themselves)
         window.statusBarColor = Color.TRANSPARENT
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
 
@@ -74,12 +71,14 @@ class MainActivity : AppCompatActivity() {
     private fun switchTo(itemId: Int, initial: Boolean = false) {
         val fragment: Fragment = when (itemId) {
             R.id.tab_habits -> habitsFragment
+            R.id.tab_hydration -> hydrationFragment
             R.id.tab_mood -> moodFragment
             R.id.tab_profile -> profileFragment
             else -> homeFragment
         }
         val tag = when (itemId) {
             R.id.tab_habits -> "tab_habits"
+            R.id.tab_hydration -> "tab_hydration"
             R.id.tab_mood -> "tab_mood"
             R.id.tab_profile -> "tab_profile"
             else -> "tab_home"
@@ -91,4 +90,3 @@ class MainActivity : AppCompatActivity() {
         tx.commitAllowingStateLoss()
     }
 }
-
