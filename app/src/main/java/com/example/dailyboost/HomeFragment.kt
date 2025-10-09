@@ -125,9 +125,6 @@ class HomeFragment : Fragment() {
             (activity as? MainActivity)?.switchToTab(R.id.tab_habits)
         }
 
-        // ⛔️ Removed: navigation on hydration card tap
-        // (No click listener on R.id.cardHydration now)
-
         // Hydration
         NotificationHelper.createChannel(requireContext())
         switchHydration = view.findViewById(R.id.switchHydration)

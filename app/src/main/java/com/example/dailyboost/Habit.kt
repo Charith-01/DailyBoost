@@ -9,8 +9,8 @@ data class Habit(
     val id: String = UUID.randomUUID().toString(),
     var title: String,
     var type: HabitType,
-    var goalPerDay: Int,          // COUNT: target number; YES_NO: usually 1
-    var progressToday: Int = 0,   // 0..goalPerDay
+    var goalPerDay: Int,
+    var progressToday: Int = 0,
     var isActive: Boolean = true,
     val createdAt: Long = System.currentTimeMillis()
 ) {

@@ -9,10 +9,6 @@ import java.util.Locale
 
 object HabitStore {
 
-    // -------------------------------------------------------------------------
-    // CRUD
-    // -------------------------------------------------------------------------
-
     fun loadHabits(context: Context): MutableList<Habit> {
         val prefs = context.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
         val arr = JSONArray(prefs.getString(Constants.KEY_HABITS, "[]"))
@@ -50,10 +46,6 @@ object HabitStore {
         saveHabits(context, list)
     }
 
-    // -------------------------------------------------------------------------
-    // Progress mutations
-    // -------------------------------------------------------------------------
-
     fun incrementCount(context: Context, habitId: String, delta: Int = 1) {
         val list = loadHabits(context)
         val h = list.find { it.id == habitId } ?: return
@@ -73,11 +65,6 @@ object HabitStore {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Aggregates
-    // -------------------------------------------------------------------------
-
-    /** Average completion across active habits (0..100). */
     fun computeTodayPercent(context: Context): Int {
         val actives = loadHabits(context).filter { it.isActive }
         if (actives.isEmpty()) return 0
@@ -89,7 +76,6 @@ object HabitStore {
         return (ratios.average() * 100).toInt()
     }
 
-    /** Returns Pair(completed, totalActive) for "X/Y habits". */
     fun todayCounts(context: Context): Pair<Int, Int> {
         val actives = loadHabits(context).filter { it.isActive }
         val total = actives.size
@@ -100,16 +86,6 @@ object HabitStore {
         return done to total
     }
 
-    // -------------------------------------------------------------------------
-    // Daily rollover + streak
-    // -------------------------------------------------------------------------
-
-    /**
-     * Call on app open / Home. If the calendar date changed:
-     * 1) Decide if *yesterday* was fully completed (all active habits reached goal).
-     * 2) Update streak accordingly.
-     * 3) Reset today's progress to 0 and store the new date.
-     */
     fun resetIfNewDay(context: Context) {
         val prefs = context.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
         val today = todayString()
@@ -140,10 +116,6 @@ object HabitStore {
         val prefs = context.getSharedPreferences(Constants.PREFS_NAME, Context.MODE_PRIVATE)
         return prefs.getInt(Constants.KEY_STREAK, 0)
     }
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
 
     private fun todayString(): String {
         val sdf = SimpleDateFormat(Constants.DATE_PATTERN, Locale.US)

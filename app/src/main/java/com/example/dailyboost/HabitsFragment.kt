@@ -154,7 +154,7 @@ private class HabitAdapter(
         title.contains("gym", true)   -> "🏋️"
         title.contains("read", true)  -> "📚"
         title.contains("walk", true)  -> "🚶"
-        title.contains("meditat", true)-> "🧘"
+        title.contains("meditation", true)-> "🧘"
         else                          -> "✅"
     }
 }
